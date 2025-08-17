@@ -46,7 +46,7 @@ public class ProductSpecs {
         };
     }
 
-    public static Specification<Product> combinedSpecification(String searchTerm, String category, Double minPrice, Double maxPrice) {
+    public static Specification<Product> combinedSpecification(String searchTerm, String category, Double minPrice, Double maxPrice, Boolean lowStock) {
         return (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -65,6 +65,10 @@ public class ProductSpecs {
                 predicates.add(builder.greaterThanOrEqualTo(root.get("price"), minPrice));
             } else if (maxPrice != null) {
                 predicates.add(builder.lessThanOrEqualTo(root.get("price"), maxPrice));
+            } 
+
+            if (Boolean.TRUE.equals(lowStock)) {
+                predicates.add(builder.lessThan(root.get("quantity"), root.get("minStock")));
             }
 
             return predicates.isEmpty()

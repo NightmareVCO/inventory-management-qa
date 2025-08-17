@@ -33,10 +33,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
+
 	// DB and Migrations
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
 	implementation 'org.postgresql:postgresql'
+	implementation 'org.hibernate.orm:hibernate-envers'
+	implementation 'org.hibernate.orm:hibernate-core'
+
 
 	// Dev tools
 	implementation 'org.mapstruct:mapstruct:1.6.3'

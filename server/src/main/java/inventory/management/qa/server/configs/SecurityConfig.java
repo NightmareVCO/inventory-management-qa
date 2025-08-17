@@ -1,3 +1,4 @@
+/* (C)2025 */
 package inventory.management.qa.server.configs;
 
 import lombok.RequiredArgsConstructor;
@@ -25,17 +26,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers(HttpMethod.GET, "/api/v1/product/").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/product/{id}").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/notifications/stream").permitAll()
-                    .anyRequest().authenticated()
-            ).oauth2ResourceServer(oauth2 -> oauth2
-                    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
-            ).sessionManagement(session -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(
+                        authorize ->
+                                authorize
+                                        .requestMatchers(HttpMethod.GET, "/api/v1/product/")
+                                        .permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/api/v1/product/{id}")
+                                        .permitAll()
+                                        .requestMatchers(
+                                                HttpMethod.GET, "/api/v1/notifications/stream")
+                                        .permitAll()
+                                        .anyRequest()
+                                        .authenticated())
+                .oauth2ResourceServer(
+                        oauth2 ->
+                                oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)))
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
@@ -52,5 +60,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 }

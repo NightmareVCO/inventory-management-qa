@@ -40,8 +40,7 @@ public class ProductController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) Boolean lowStock
-            ) {
+            @RequestParam(required = false) Boolean lowStock) {
         Specification<Product> specification =
                 ProductSpecs.combinedSpecification(search, category, minPrice, maxPrice, lowStock);
 

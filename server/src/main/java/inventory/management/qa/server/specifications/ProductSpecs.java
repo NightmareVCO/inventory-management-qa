@@ -1,11 +1,11 @@
+/* (C)2025 */
 package inventory.management.qa.server.specifications;
 
 import inventory.management.qa.server.entities.Product;
 import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.jpa.domain.Specification;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.jpa.domain.Specification;
 
 public class ProductSpecs {
     private ProductSpecs() {}
@@ -16,7 +16,8 @@ public class ProductSpecs {
                 return builder.conjunction();
             }
 
-            return builder.like(builder.lower(root.get("name")), "%" + searchTerm.trim().toLowerCase() + "%");
+            return builder.like(
+                    builder.lower(root.get("name")), "%" + searchTerm.trim().toLowerCase() + "%");
         };
     }
 
@@ -46,13 +47,20 @@ public class ProductSpecs {
         };
     }
 
-    public static Specification<Product> combinedSpecification(String searchTerm, String category, Double minPrice, Double maxPrice, Boolean lowStock) {
+    public static Specification<Product> combinedSpecification(
+            String searchTerm,
+            String category,
+            Double minPrice,
+            Double maxPrice,
+            Boolean lowStock) {
         return (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (searchTerm != null && !searchTerm.isEmpty()) {
-                predicates.add(builder.like(builder.lower(root.get("name")),
-                        "%" + searchTerm.trim().toLowerCase() + "%"));
+                predicates.add(
+                        builder.like(
+                                builder.lower(root.get("name")),
+                                "%" + searchTerm.trim().toLowerCase() + "%"));
             }
 
             if (category != null && !category.isEmpty()) {
@@ -65,7 +73,7 @@ public class ProductSpecs {
                 predicates.add(builder.greaterThanOrEqualTo(root.get("price"), minPrice));
             } else if (maxPrice != null) {
                 predicates.add(builder.lessThanOrEqualTo(root.get("price"), maxPrice));
-            } 
+            }
 
             if (Boolean.TRUE.equals(lowStock)) {
                 predicates.add(builder.lessThan(root.get("quantity"), root.get("minStock")));

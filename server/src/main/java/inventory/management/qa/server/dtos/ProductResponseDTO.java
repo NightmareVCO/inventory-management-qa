@@ -12,4 +12,5 @@ public class ProductResponseDTO {
     double price;
     int quantity;
     int minStock;
+    int olderQuantity;
 }

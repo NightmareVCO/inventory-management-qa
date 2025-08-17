@@ -1,13 +1,11 @@
 /* (C)2025 */
 package inventory.management.qa.server.services;
 
+import inventory.management.qa.server.dtos.ProductNotificationDTO;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import inventory.management.qa.server.dtos.ProductNotificationDTO;
 
 @Service
 public class ProductNotificationService {
@@ -27,9 +25,7 @@ public class ProductNotificationService {
     public void sendLowStockNotification(ProductNotificationDTO notification) {
         for (SseEmitter emitter : emitters.values()) {
             try {
-                emitter.send(SseEmitter.event()
-                    .name("low-stock")
-                    .data(notification));
+                emitter.send(SseEmitter.event().name("low-stock").data(notification));
             } catch (Exception e) {
                 emitter.completeWithError(e);
             }

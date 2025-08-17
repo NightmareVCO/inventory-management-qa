@@ -1,10 +1,10 @@
+/* (C)2025 */
 package inventory.management.qa.server.dtos;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -21,5 +21,14 @@ public class PaginatedResponseDTO<T> {
         this.pageSize = page.getSize();
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
+    }
+
+    public PaginatedResponseDTO(
+            List<T> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
+        this.content = content;
+        this.pageNumber = pageNumber;
+        this.pageSize = pageSize;
+        this.totalElements = totalElements;
+        this.totalPages = totalPages;
     }
 }

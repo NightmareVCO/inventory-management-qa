@@ -7,8 +7,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +24,7 @@ public class Product {
 
     private double price;
     private int quantity;
+    private int olderQuantity;
     private int minStock;
 
     public Product() {}
@@ -38,6 +41,7 @@ public class Product {
         this.category = category;
         this.price = price;
         this.quantity = quantity;
+        this.olderQuantity = quantity;
         this.minStock = minStock;
     }
 
@@ -95,5 +99,13 @@ public class Product {
 
     public void setMinStock(int minStock) {
         this.minStock = minStock;
+    }
+
+    public int getOlderQuantity() {
+        return olderQuantity;
+    }
+
+    public void setOlderQuantity(int olderQuantity) {
+        this.olderQuantity = olderQuantity;
     }
 }

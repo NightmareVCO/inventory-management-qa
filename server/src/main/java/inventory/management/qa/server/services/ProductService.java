@@ -7,7 +7,6 @@ import inventory.management.qa.server.exception.EntityNotFoundException;
 import inventory.management.qa.server.repositories.ProductRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +41,7 @@ public class ProductService {
         existingProduct.setCategory(product.getCategory());
         existingProduct.setPrice(product.getPrice());
         existingProduct.setQuantity(product.getQuantity());
+        existingProduct.setOlderQuantity(existingProduct.getQuantity());
         existingProduct.setMinStock(product.getMinStock());
 
         if (isLowStock(existingProduct)) {

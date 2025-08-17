@@ -1,3 +1,4 @@
+/* (C)2025 */
 package inventory.management.qa.server.dtos;
 
 import jakarta.validation.constraints.DecimalMin;
@@ -9,21 +10,15 @@ import lombok.Value;
 
 @Value
 public class ProductRequestDTO {
-    @NotBlank(message = "Product name is required")
-    String name;
+    @NotBlank(message = "Product name is required") String name;
 
-    @NotBlank(message = "Product description is required")
-    @Size(max = 200, message = "Description cannot exceed 200 characters")
-    String description;
+    @NotBlank(message = "Product description is required") @Size(max = 200, message = "Description cannot exceed 200 characters") String description;
 
-    @NotBlank(message = "Product category is required")
-    String category;
+    @NotBlank(message = "Product category is required") String category;
 
-    @NotNull(message = "Product price is required")
-    @DecimalMin(value = "0.0", message = "Price must be greater than 0")
-    double price;
+    @NotNull(message = "Product price is required") @DecimalMin(value = "0.0", message = "Price must be greater than 0") double price;
 
-    @NotNull(message = "Product quantity is required")
-    @Min(value = 0, message = "Quantity must be greater than or equal to 0")
-    int quantity;
+    @NotNull(message = "Product quantity is required") @Min(value = 0, message = "Quantity must be greater than or equal to 0") int quantity;
+
+    @NotNull(message = "Product min stock is required") @Min(value = 0, message = "Min stock must be greater than or equal to 0") int minStock;
 }

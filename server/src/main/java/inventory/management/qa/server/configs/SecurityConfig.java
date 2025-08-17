@@ -29,6 +29,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.GET, "/api/v1/product/").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/product/{id}").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/notifications/stream").permitAll()
                     .anyRequest().authenticated()
             ).oauth2ResourceServer(oauth2 -> oauth2
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))

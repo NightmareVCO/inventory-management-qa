@@ -1,15 +1,16 @@
 import type { Product } from '@lib/model/product.model';
 
-const API_ULR = `${process.env.NEXT_PUBLIC_API_URL}/product`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/product`;
 
 type ActionProps = {
-	url?: string;
-	product: Product;
+	url: string;
+	product?: Product;
+	quantity?: number;
 	headers?: Record<string, string>;
 };
 
 export async function createProduct({
-	url = API_ULR,
+	url = API_URL,
 	product,
 	headers,
 }: ActionProps): Promise<Product> {
@@ -30,7 +31,7 @@ export async function createProduct({
 }
 
 export async function updateProduct({
-	url = API_ULR,
+	url = API_URL,
 	product,
 	headers,
 }: ActionProps) {
@@ -50,8 +51,31 @@ export async function updateProduct({
 	return response.json();
 }
 
+export async function updateProductStock({
+	url = API_URL,
+	quantity,
+	headers,
+}: ActionProps) {
+	const response = await fetch(`${url}`, {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json',
+			...headers,
+		},
+		body: JSON.stringify({
+			quantity: quantity,
+		}),
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to update product stock');
+	}
+
+	return response.json();
+}
+
 export async function deleteProduct({
-	url = API_ULR,
+	url = API_URL,
 	productId,
 	headers,
 }: ActionProps & { productId: string }) {
@@ -62,10 +86,12 @@ export async function deleteProduct({
 		},
 	});
 
-	console.log('Delete response:', response);
-
 	if (!response.ok) {
 		throw new Error('Failed to delete product');
+	}
+
+	if (response.status === 204) {
+		return null;
 	}
 
 	return response.json();

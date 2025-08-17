@@ -3,8 +3,10 @@
 import { Button, Flex } from '@chakra-ui/react';
 import Card from '@components/card/Card';
 import FilterByCategory from '@components/filters/FilterByCategory';
+import FilterByLowStock from '@components/filters/FilterByLowStock';
 import FilterByMaxAmount from '@components/filters/FilterByMaxAmount';
 import FilterByMinAmount from '@components/filters/FilterByMinAmount';
+import LoadingScreen from '@components/loading/LoadingScreen';
 import AddProductModal from '@components/modal/AddProductModal';
 import DeleteProductModal from '@components/modal/DeleteProductModal';
 import EditProductModal from '@components/modal/EditProductModal';
@@ -13,7 +15,6 @@ import Pagination from '@components/pagination/Pagination';
 import ProductSearch from '@components/search/ProductSearch';
 import ProductTable from '@components/table/ProductTable';
 import { useInventoryPage } from '@lib/hooks/useInventoryPage';
-import LoadingScreen from '@/components/loading/LoadingScreen';
 
 export default function InventoryPage() {
 	const {
@@ -95,6 +96,7 @@ export default function InventoryPage() {
 							<FilterByMinAmount />
 							<FilterByMaxAmount />
 							<FilterByCategory />
+							<FilterByLowStock />
 						</Flex>
 					</Flex>
 					<ProductTable

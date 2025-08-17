@@ -16,6 +16,7 @@ public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "olderQuantity", source = "quantity")
     Product productRequestDTOToProduct(ProductRequestDTO productRequestDTO);
 
     ProductResponseDTO productToProductResponseDTO(Product product);

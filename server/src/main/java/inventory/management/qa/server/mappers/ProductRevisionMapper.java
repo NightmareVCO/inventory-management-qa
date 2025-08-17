@@ -1,12 +1,12 @@
+/* (C)2025 */
 package inventory.management.qa.server.mappers;
 
 import inventory.management.qa.server.dtos.ProductRevisionResponseDTO;
 import inventory.management.qa.server.entities.ProductRevision;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper
 public interface ProductRevisionMapper {

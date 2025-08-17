@@ -1,3 +1,4 @@
+/* (C)2025 */
 package inventory.management.qa.server.dtos;
 
 import lombok.Value;

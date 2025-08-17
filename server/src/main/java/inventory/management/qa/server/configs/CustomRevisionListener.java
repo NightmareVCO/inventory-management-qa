@@ -1,3 +1,4 @@
+/* (C)2025 */
 package inventory.management.qa.server.configs;
 
 import inventory.management.qa.server.entities.RevisionInfo;
@@ -12,9 +13,10 @@ public class CustomRevisionListener implements RevisionListener {
         RevisionInfo revisionInfo = (RevisionInfo) revisionEntity;
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null && authentication.isAuthenticated())
-                ? authentication.getName()
-                : "unknown_email";
+        String email =
+                (authentication != null && authentication.isAuthenticated())
+                        ? authentication.getName()
+                        : "unknown_email";
 
         revisionInfo.setUserEmail(email);
     }

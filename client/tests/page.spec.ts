@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 test.use({
-  viewport: { width: 1920, height: 1080 }
+	viewport: { width: 1920, height: 1080 },
 });
-
 
 test.describe('Homepage', () => {
 	test.beforeEach(async ({ page }) => {
@@ -53,7 +52,9 @@ test.describe('Homepage - authenticated with permission', () => {
 		page,
 	}) => {
 		const name = /go to inventory/i;
-		const cta = page.getByRole('button', { name }).or(page.getByRole('link', { name }));
+		const cta = page
+			.getByRole('button', { name })
+			.or(page.getByRole('link', { name }));
 
 		await expect(cta).toBeVisible();
 	});
@@ -72,7 +73,9 @@ test.describe('Homepage - authenticated without permission', () => {
 		page,
 	}) => {
 		const name = /welcome/i;
-		const cta = page.getByRole('button', { name }).or(page.getByRole('link', { name }));
+		const cta = page
+			.getByRole('button', { name })
+			.or(page.getByRole('link', { name }));
 
 		await expect(cta).toBeVisible();
 	});

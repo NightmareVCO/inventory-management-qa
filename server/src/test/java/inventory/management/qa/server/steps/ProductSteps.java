@@ -133,7 +133,8 @@ public class ProductSteps {
                 productData.get("description"),
                 productData.get("category"),
                 Double.parseDouble(productData.get("price")),
-                Integer.parseInt(productData.get("quantity"))
+                Integer.parseInt(productData.get("quantity")),
+                Integer.parseInt(productData.get("minStock"))
         );
     }
 

@@ -1,3 +1,4 @@
+/* (C)2025 */
 package inventory.management.qa.server.entities;
 
 import jakarta.persistence.Entity;
@@ -11,83 +12,100 @@ import org.hibernate.envers.Audited;
 @Entity
 @Audited
 public class Product {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String name;
-  private String description;
-  @Enumerated(EnumType.STRING)
-  private Category category;
-  private double price;
-  private int quantity;
-  private int olderQuantity;
+    private String name;
+    private String description;
 
-  public Product() {
-  }
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
-  public Product(String name, String description, Category category, double price, int quantity) {
-    this.name = name;
-    this.description = description;
-    this.category = category;
-    this.price = price;
-    this.quantity = quantity;
-    this.olderQuantity = quantity;
-  }
+    private double price;
+    private int quantity;
+    private int olderQuantity;
+    private int minStock;
 
-  public Long getId() {
-    return id;
-  }
+    public Product() {}
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    public Product(
+            String name,
+            String description,
+            Category category,
+            double price,
+            int quantity,
+            int minStock) {
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
+        this.olderQuantity = quantity;
+        this.minStock = minStock;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public Long getId() {
+        return id;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public Category getCategory() {
-    return category;
-  }
+    public String getDescription() {
+        return description;
+    }
 
-  public void setCategory(Category category) {
-    this.category = category;
-  }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-  public double getPrice() {
-    return price;
-  }
+    public Category getCategory() {
+        return category;
+    }
 
-  public void setPrice(double price) {
-    this.price = price;
-  }
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
-  public int getQuantity() {
-    return quantity;
-  }
+    public double getPrice() {
+        return price;
+    }
 
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
-  public int getOlderQuantity() {
-      return olderQuantity;
-  }
+    public int getQuantity() {
+        return quantity;
+    }
 
-  public void setOlderQuantity(int olderQuantity) {
-      this.olderQuantity = olderQuantity;
-  }
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getMinStock() {
+        return minStock;
+    }
+
+    public void setMinStock(int minStock) {
+        this.minStock = minStock;
+    }
+
+    public int getOlderQuantity() {
+        return olderQuantity;
+    }
+
+    public void setOlderQuantity(int olderQuantity) {
+        this.olderQuantity = olderQuantity;
+    }
 }

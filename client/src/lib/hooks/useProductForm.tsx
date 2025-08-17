@@ -4,7 +4,7 @@ import type { Product } from '@lib/model/product.model';
 import { useState } from 'react';
 import useSWRMutation from 'swr/mutation';
 
-const API_ULR = NEXT_PUBLIC_API_URL;
+const API_URL = NEXT_PUBLIC_API_URL;
 
 type ProductFormErrors = {
 	name: boolean;
@@ -12,6 +12,7 @@ type ProductFormErrors = {
 	category: boolean;
 	price: boolean;
 	quantity: boolean;
+	minStock: boolean;
 };
 
 type UseProductFormProps = {
@@ -35,6 +36,7 @@ export function useProductForm({
 		category: '',
 		price: '0',
 		quantity: '0',
+		minStock: '0',
 	});
 
 	const [errors, setErrors] = useState<ProductFormErrors>({
@@ -43,20 +45,21 @@ export function useProductForm({
 		category: false,
 		price: false,
 		quantity: false,
+		minStock: false,
 	});
 
 	const createMutation = useSWRMutation(
-		`${API_ULR}`,
+		`${API_URL}`,
 		(key, { arg }: { arg: Product }) =>
 			createProduct({
-				url: key,
+				url: `${key}/product/`,
 				product: arg,
 				headers: { Authorization: `Bearer ${token}` },
 			}),
 	);
 
 	const updateMutation = useSWRMutation(
-		mode === 'edit' ? `${API_ULR}` : null,
+		mode === 'edit' ? `${API_URL}` : null,
 		(key, { arg }: { arg: Product }) =>
 			updateProduct({
 				url: `${key}/product/${arg.id}`,
@@ -105,6 +108,7 @@ export function useProductForm({
 			category: formData.category === '',
 			price: Number.parseFloat(formData.price) <= 0,
 			quantity: Number.parseInt(formData.quantity) <= 0,
+			minStock: Number.parseInt(formData.minStock) <= 0,
 		};
 
 		setErrors(newErrors);
@@ -118,6 +122,7 @@ export function useProductForm({
 			category: '',
 			price: '0',
 			quantity: '0',
+			minStock: '0',
 		});
 
 		setErrors({
@@ -126,6 +131,7 @@ export function useProductForm({
 			category: false,
 			price: false,
 			quantity: false,
+			minStock: false,
 		});
 	};
 

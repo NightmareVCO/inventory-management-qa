@@ -105,6 +105,7 @@ export default function EditProductModal({
 				category: product.category,
 				price: product.price,
 				quantity: product.quantity,
+				minStock: product.minStock,
 			});
 		}
 	}, [isOpen, product, setFormData]);
@@ -209,6 +210,26 @@ export default function EditProductModal({
 							{errors.quantity && (
 								<FormErrorMessage>
 									Quantity must be a valid number.
+								</FormErrorMessage>
+							)}
+						</FormControl>
+
+						<FormControl isInvalid={!!errors.minStock} isRequired>
+							<FormLabel>Minimum Stock</FormLabel>
+							<NumberInput
+								min={0}
+								value={formData.minStock}
+								onChange={(value) => handleNumberChange('minStock', value)}
+							>
+								<NumberInputField name="minStock" />
+								<NumberInputStepper>
+									<NumberIncrementStepper />
+									<NumberDecrementStepper />
+								</NumberInputStepper>
+							</NumberInput>
+							{errors.minStock && (
+								<FormErrorMessage>
+									Minimum stock must be a valid number.
 								</FormErrorMessage>
 							)}
 						</FormControl>

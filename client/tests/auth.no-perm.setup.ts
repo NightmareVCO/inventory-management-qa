@@ -1,7 +1,7 @@
 import { expect, test as setup } from '@playwright/test';
 import path from 'path';
 
-const noPermFile = path.join(
+const NO_PERM_FILE = path.join(
 	__dirname,
 	'../playwright/.auth/user-no-perm.json',
 );
@@ -26,5 +26,5 @@ setup('authenticate as user without permission', async ({ page }) => {
 
 	await expect(page.locator('button:has-text("Welcome")')).toBeVisible();
 
-	await page.context().storageState({ path: noPermFile, indexedDB: true });
+	await page.context().storageState({ path: NO_PERM_FILE, indexedDB: true });
 });

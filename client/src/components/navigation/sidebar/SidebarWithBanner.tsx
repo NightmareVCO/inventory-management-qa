@@ -14,15 +14,27 @@ import {
 	IconButton,
 	Menu,
 	MenuButton,
+	MenuItem,
+	MenuList,
 	Text,
 	useColorModeValue,
 	useDisclosure,
 	VStack,
 } from '@chakra-ui/react';
+import ProductNotification from '@components/card/ProductNotificationCard';
+import useNotificationProduct from '@lib/hooks/useNotificationProduct';
 import { useKeycloak } from '@react-keycloak/web';
 import { usePathname } from 'next/navigation';
 import type { IconType } from 'react-icons';
-import { FiChevronDown, FiGrid, FiHome, FiMenu } from 'react-icons/fi';
+import {
+	FiBell,
+	FiBox,
+	FiChevronDown,
+	FiGrid,
+	FiHome,
+	FiMenu,
+} from 'react-icons/fi';
+import { VscBellDot } from 'react-icons/vsc';
 
 interface LinkItemProps {
 	name: string;
@@ -47,6 +59,7 @@ interface SidebarProps extends BoxProps {
 const LinkItems: Array<LinkItemProps> = [
 	{ name: 'Home', href: '#', icon: FiHome },
 	{ name: 'Inventory', href: '/inventory', icon: FiGrid },
+	{ name: 'Stock', href: '/stock', icon: FiBox },
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
@@ -119,6 +132,7 @@ const NavItem = ({ icon, href, children, ...rest }: NavItemProps) => {
 
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 	const { keycloak } = useKeycloak();
+	const { notifications, handleDeleteNotification } = useNotificationProduct();
 
 	const currentUser = {
 		name: keycloak?.tokenParsed?.given_name ?? 'No Name',
@@ -132,7 +146,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 			px={{ base: 4, md: 4 }}
 			height="20"
 			alignItems="center"
-			bg={useColorModeValue('white', 'gray.900')}
+			bg="white"
 			borderBottomWidth="1px"
 			borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
 			justifyContent={{ base: 'space-between', md: 'flex-end' }}
@@ -147,6 +161,34 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 			/>
 
 			<HStack spacing={{ base: '0', md: '6' }}>
+				<Menu closeOnSelect={false}>
+					<MenuButton
+						py={2}
+						transition="all 0.3s"
+						_focus={{ boxShadow: 'none' }}
+					>
+						{notifications.length > 0 ? (
+							<VscBellDot size="24px" color="#fd8916" />
+						) : (
+							<FiBell size="24px" />
+						)}
+					</MenuButton>
+					{notifications?.length > 0 && (
+						<MenuList bg="white" borderColor="gray.200">
+							{notifications?.map((notification) => {
+								return (
+									<MenuItem key={notification.uuid}>
+										<ProductNotification
+											notification={notification}
+											onDelete={handleDeleteNotification}
+										/>
+									</MenuItem>
+								);
+							})}
+						</MenuList>
+					)}
+				</Menu>
+
 				<Flex alignItems={'center'}>
 					<Menu>
 						<MenuButton

@@ -1,3 +1,4 @@
+/* (C)2025 */
 package inventory.management.qa.server.entities;
 
 import inventory.management.qa.server.configs.CustomRevisionListener;
@@ -11,8 +12,6 @@ import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
-import java.time.LocalDateTime;
-
 @Entity
 @RevisionEntity(CustomRevisionListener.class)
 @Getter
@@ -23,8 +22,7 @@ public class RevisionInfo {
     @RevisionNumber
     private Long id;
 
-    @RevisionTimestamp
-    private Long timestamp;
+    @RevisionTimestamp private Long timestamp;
 
     private String userEmail;
 }

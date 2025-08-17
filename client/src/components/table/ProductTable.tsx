@@ -68,6 +68,7 @@ export default function ProductTable({
 						<Th>Category</Th>
 						<Th isNumeric>Price</Th>
 						<Th isNumeric>Quantity</Th>
+						<Th isNumeric>Min Stock</Th>
 						<Th textAlign="center">Actions</Th>
 					</Tr>
 				</Thead>
@@ -92,6 +93,16 @@ export default function ProductTable({
 									px={2}
 								>
 									{product.quantity}
+								</Badge>
+							</Td>
+							<Td isNumeric>
+								<Badge
+									colorScheme="orange"
+									variant="solid"
+									borderRadius="full"
+									px={2}
+								>
+									{product.minStock}
 								</Badge>
 							</Td>
 							<Td>

@@ -107,6 +107,7 @@ export function useInventoryPage() {
 	const page = searchParams.get('page');
 	const minPrice = searchParams.get('minPrice');
 	const maxPrice = searchParams.get('maxPrice');
+	const lowStock = searchParams.get('lowStock') === 'true';
 
 	const {
 		data: products = {
@@ -131,6 +132,7 @@ export function useInventoryPage() {
 					).toString(),
 					minPrice: minPrice ?? '',
 					maxPrice: maxPrice ?? '',
+					lowStock: lowStock ? 'true' : '',
 				}).toString()}`
 			: null,
 		fetcher,

@@ -23,6 +23,7 @@ import {
 	useToast,
 	VStack,
 } from '@chakra-ui/react';
+import { useInventoryPage } from '@lib/hooks/useInventoryPage';
 import { useProductForm } from '@lib/hooks/useProductForm';
 import { useKeycloak } from '@react-keycloak/web';
 
@@ -49,6 +50,7 @@ export default function AddProductModal({
 }: AddProductModalProps) {
 	const toast = useToast();
 	const { keycloak } = useKeycloak();
+	const { refreshProducts } = useInventoryPage();
 
 	const {
 		formData,
@@ -68,6 +70,9 @@ export default function AddProductModal({
 				duration: 5000,
 				isClosable: true,
 			});
+
+			refreshProducts();
+
 			handleCloseModal();
 		},
 		onError: (error) => {
@@ -187,6 +192,27 @@ export default function AddProductModal({
 							{errors.quantity && (
 								<FormErrorMessage>
 									Quantity must be at least 1.
+								</FormErrorMessage>
+							)}
+						</FormControl>
+
+						{/* Min Stock */}
+						<FormControl isInvalid={errors.minStock} isRequired>
+							<FormLabel>Min Stock</FormLabel>
+							<NumberInput
+								min={1}
+								value={formData.minStock}
+								onChange={(value) => handleNumberChange('minStock', value)}
+							>
+								<NumberInputField name="minStock" />
+								<NumberInputStepper>
+									<NumberIncrementStepper />
+									<NumberDecrementStepper />
+								</NumberInputStepper>
+							</NumberInput>
+							{errors.minStock && (
+								<FormErrorMessage>
+									Min stock must be at least 1.
 								</FormErrorMessage>
 							)}
 						</FormControl>

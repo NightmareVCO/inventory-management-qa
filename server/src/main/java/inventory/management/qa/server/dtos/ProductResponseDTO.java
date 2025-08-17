@@ -1,3 +1,4 @@
+/* (C)2025 */
 package inventory.management.qa.server.dtos;
 
 import lombok.Value;
@@ -10,4 +11,5 @@ public class ProductResponseDTO {
     String category;
     double price;
     int quantity;
+    int minStock;
 }

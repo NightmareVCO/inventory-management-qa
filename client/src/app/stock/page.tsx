@@ -13,7 +13,7 @@ import ProductSearch from '@components/search/ProductSearch';
 import { useInventoryPage } from '@lib/hooks/useInventoryPage';
 
 export default function InventoryPage() {
-	const { products, isLoading, isAuthChecking } = useInventoryPage();
+	const { products, isAuthChecking } = useInventoryPage();
 
 	if (isAuthChecking) {
 		return <LoadingScreen />;

@@ -45,7 +45,6 @@ type AddProductModalProps = {
 
 export default function AddProductModal({
 	isOpen,
-	onOpen,
 	onClose,
 }: AddProductModalProps) {
 	const toast = useToast();

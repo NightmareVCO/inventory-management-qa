@@ -49,6 +49,7 @@ export default function useNotificationProduct() {
 		es.onerror = () => es.close();
 
 		return () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Type is needed for event handler
 			es.removeEventListener('low-stock', handler as any);
 			es.close();
 		};

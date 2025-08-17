@@ -175,7 +175,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
 		<Box
 			as="a"
 			href={href}
-			// biome-ignore lint/a11y/useSemanticElements: <explanation>
+			// biome-ignore lint/a11y/useSemanticElements: it does not affect accessibility
 			role={'group'}
 			display={'block'}
 			p={2}

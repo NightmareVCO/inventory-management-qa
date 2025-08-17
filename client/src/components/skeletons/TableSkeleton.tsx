@@ -37,7 +37,7 @@ export default function ProductTableSkeleton({
 					{Array(rowCount)
 						.fill(0)
 						.map((_, index) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+							// biome-ignore lint/suspicious/noArrayIndexKey: Using index as key for skeleton rows is acceptable here
 							<Tr key={index}>
 								<Td>
 									<Skeleton height="20px" width="120px" />

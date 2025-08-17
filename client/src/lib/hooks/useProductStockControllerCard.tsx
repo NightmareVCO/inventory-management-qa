@@ -1,6 +1,6 @@
 import { NEXT_PUBLIC_API_URL } from '@lib/constants/config.constants';
 import type { Product } from '@lib/model/product.model';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import useSWRMutation from 'swr/mutation';
 import { useDebouncedCallback } from 'use-debounce';
 import { updateProductStock } from '../actions/products.action';

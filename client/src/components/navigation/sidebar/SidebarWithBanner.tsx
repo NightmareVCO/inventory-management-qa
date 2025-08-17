@@ -103,7 +103,7 @@ const NavItem = ({ icon, href, children, ...rest }: NavItemProps) => {
 				mx="4"
 				my="2"
 				borderRadius="lg"
-				// biome-ignore lint/a11y/useSemanticElements: <explanation>
+				// biome-ignore lint/a11y/useSemanticElements: it does not affect accessibility
 				role="group"
 				bg={isActive ? 'turquoise.700' : 'transparent'}
 				color={isActive ? 'white' : 'gray.600'}

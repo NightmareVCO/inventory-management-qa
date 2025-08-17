@@ -1,5 +1,5 @@
+import path from 'node:path';
 import { expect, test as setup } from '@playwright/test';
-import path from 'path';
 
 const NO_PERM_FILE = path.join(
 	__dirname,

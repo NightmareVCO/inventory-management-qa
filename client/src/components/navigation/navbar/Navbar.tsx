@@ -18,7 +18,6 @@ import {
 	PopoverTrigger,
 	Stack,
 	Text,
-	useBreakpointValue,
 	useColorModeValue,
 	useDisclosure,
 } from '@chakra-ui/react';
@@ -265,12 +264,11 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
 					borderColor={useColorModeValue('gray.200', 'gray.700')}
 					align={'start'}
 				>
-					{children &&
-						children.map((child) => (
-							<Box as="a" key={child.label} py={2} href={child.href}>
-								{child.label}
-							</Box>
-						))}
+					{children?.map((child) => (
+						<Box as="a" key={child.label} py={2} href={child.href}>
+							{child.label}
+						</Box>
+					))}
 				</Stack>
 			</Collapse>
 		</Stack>

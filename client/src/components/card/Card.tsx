@@ -1,7 +1,6 @@
 'use client';
 
 import { Box, Flex, Icon, Text, useColorModeValue } from '@chakra-ui/react';
-import { px } from 'framer-motion';
 import { FiBox } from 'react-icons/fi';
 
 interface ProductCardProps {

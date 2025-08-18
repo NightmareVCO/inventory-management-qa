@@ -13,7 +13,7 @@ export function useChangesPage() {
 	const searchParams = useSearchParams();
 
 	const { isAuthChecking, shouldFetch, token } = useAuth({
-		redirectAfterLogin: Routes.Inventory,
+		redirectAfterLogin: Routes.Changes,
 	});
 
 	const page = searchParams.get('page');

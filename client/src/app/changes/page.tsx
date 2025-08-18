@@ -15,8 +15,6 @@ export default function ChangesPage() {
 		return <LoadingScreen />;
 	}
 
-	console.log('Changes:', changes);
-
 	return (
 		<main>
 			<SidebarWithHeader>

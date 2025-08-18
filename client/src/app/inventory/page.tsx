@@ -34,7 +34,7 @@ export default function InventoryPage() {
 		isAuthChecking,
 	} = useInventoryPage();
 
-	if (isAuthChecking) {
+	if (isAuthChecking || isLoading) {
 		return <LoadingScreen />;
 	}
 

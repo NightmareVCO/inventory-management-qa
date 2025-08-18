@@ -12,7 +12,7 @@ import Pagination from '@components/pagination/Pagination';
 import ProductSearch from '@components/search/ProductSearch';
 import { useInventoryPage } from '@lib/hooks/useInventoryPage';
 
-export default function InventoryPage() {
+export default function StockPage() {
 	const { products, isAuthChecking } = useInventoryPage();
 
 	if (isAuthChecking) {

@@ -5,5 +5,6 @@ export type Product = {
 	category: string;
 	price: string;
 	quantity: string;
+	olderQuantity?: string;
 	minStock: string;
 };

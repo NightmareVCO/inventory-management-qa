@@ -32,6 +32,7 @@ import {
 	FiChevronDown,
 	FiGrid,
 	FiHome,
+	FiLayers,
 	FiMenu,
 } from 'react-icons/fi';
 import { VscBellDot } from 'react-icons/vsc';
@@ -60,6 +61,7 @@ const LinkItems: Array<LinkItemProps> = [
 	{ name: 'Home', href: '#', icon: FiHome },
 	{ name: 'Inventory', href: '/inventory', icon: FiGrid },
 	{ name: 'Stock', href: '/stock', icon: FiBox },
+	{ name: 'Changes', href: '/changes', icon: FiLayers },
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {

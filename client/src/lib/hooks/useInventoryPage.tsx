@@ -1,32 +1,22 @@
 import { useDisclosure } from '@chakra-ui/react';
+import { NEXT_PUBLIC_API_URL } from '@lib/constants/config.constants';
 import { Routes } from '@lib/constants/routes.constants';
+import useAuth from '@lib/hooks/useAuth';
+import type { ProductResponseDTO } from '@lib/model/dto/ProductResponse.dto';
 import type { Product } from '@lib/model/product.model';
 import { fetcher } from '@lib/swr/fetcher';
-import { useKeycloak } from '@react-keycloak/web';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import useSWR from 'swr';
-import { NEXT_PUBLIC_API_URL } from '../constants/config.constants';
 
 const API_URL = NEXT_PUBLIC_API_URL;
 
-type ProductResponseDTO = {
-	content: Product[];
-	page: number;
-	pageSize: number;
-	totalElements: number;
-	totalPages: number;
-};
-
 export function useInventoryPage() {
-	const router = useRouter();
 	const searchParams = useSearchParams();
-
-	const { keycloak, initialized } = useKeycloak();
 	const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
 		undefined,
 	);
-	const [isAuthChecking, setIsAuthChecking] = useState(true);
+
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const {
 		isOpen: isEditOpen,
@@ -57,50 +47,9 @@ export function useInventoryPage() {
 		console.log('Product deleted:', productId);
 	};
 
-	useEffect(() => {
-		if (!initialized) {
-			setIsAuthChecking(true);
-			return;
-		}
-
-		const checkAuthAndPermissions = async () => {
-			try {
-				if (!keycloak.authenticated) {
-					sessionStorage.setItem(
-						'redirectAfterLogin',
-						window.location.pathname,
-					);
-
-					keycloak.login({
-						redirectUri: window.location.origin + Routes.Inventory,
-					});
-					return;
-				}
-
-				const hasPermission =
-					keycloak.resourceAccess?.['inventory-backend']?.roles?.includes(
-						'admin',
-					) ||
-					keycloak.resourceAccess?.['inventory-backend']?.roles?.includes(
-						'employee',
-					);
-
-				if (!hasPermission) {
-					router.push(Routes.Home);
-					return;
-				}
-
-				setIsAuthChecking(false);
-			} catch (error) {
-				console.error('Error checking auth:', error);
-				setIsAuthChecking(false);
-			}
-		};
-
-		checkAuthAndPermissions();
-	}, [initialized, keycloak, router]);
-
-	const shouldFetch = !isAuthChecking && initialized && keycloak.authenticated;
+	const { isAuthChecking, shouldFetch, token } = useAuth({
+		redirectAfterLogin: Routes.Inventory,
+	});
 
 	const query = searchParams.get('query');
 	const category = searchParams.get('category');
@@ -108,6 +57,18 @@ export function useInventoryPage() {
 	const minPrice = searchParams.get('minPrice');
 	const maxPrice = searchParams.get('maxPrice');
 	const lowStock = searchParams.get('lowStock') === 'true';
+
+	const url = `${API_URL}/product/?${new URLSearchParams({
+		search: query ?? '',
+		category: category ?? '',
+		page: (page && !Number.isNaN(Number(page))
+			? Number(page) - 1
+			: 0
+		).toString(),
+		minPrice: minPrice ?? '',
+		maxPrice: maxPrice ?? '',
+		lowStock: lowStock ? 'true' : '',
+	}).toString()}`;
 
 	const {
 		data: products = {
@@ -122,20 +83,11 @@ export function useInventoryPage() {
 		isValidating,
 		mutate,
 	} = useSWR<ProductResponseDTO>(
-		shouldFetch
-			? `${API_URL}/product/?${new URLSearchParams({
-					search: query ?? '',
-					category: category ?? '',
-					page: (page && !Number.isNaN(Number(page))
-						? Number(page) - 1
-						: 0
-					).toString(),
-					minPrice: minPrice ?? '',
-					maxPrice: maxPrice ?? '',
-					lowStock: lowStock ? 'true' : '',
-				}).toString()}`
-			: null,
-		fetcher,
+		shouldFetch ? url : null,
+		(url) =>
+			fetcher(url, {
+				headers: { Authorization: `Bearer ${token}` },
+			}),
 		{
 			dedupingInterval: 300000,
 			revalidateOnFocus: false,

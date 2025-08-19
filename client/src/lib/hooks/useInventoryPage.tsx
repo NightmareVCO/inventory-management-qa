@@ -39,15 +39,7 @@ export function useInventoryPage() {
 		onDeleteOpen();
 	};
 
-	const handleUpdateProduct = (updatedProduct: Product) => {
-		console.log('Product updated:', updatedProduct);
-	};
-
-	const handleConfirmDelete = (productId: string) => {
-		console.log('Product deleted:', productId);
-	};
-
-	const { isAuthChecking, shouldFetch, token } = useAuth({
+	const { isAuthChecking, shouldFetch, token, hasPermission } = useAuth({
 		redirectAfterLogin: Routes.Inventory,
 	});
 
@@ -70,6 +62,12 @@ export function useInventoryPage() {
 		lowStock: lowStock ? 'true' : '',
 	}).toString()}`;
 
+	const headers = token
+		? {
+				Authorization: `Bearer ${token}`,
+			}
+		: undefined;
+
 	const {
 		data: products = {
 			content: [] as Product[],
@@ -84,10 +82,7 @@ export function useInventoryPage() {
 		mutate,
 	} = useSWR<ProductResponseDTO>(
 		shouldFetch ? url : null,
-		(url) =>
-			fetcher(url, {
-				headers: { Authorization: `Bearer ${token}` },
-			}),
+		(url) => fetcher(url, headers ? { headers } : undefined),
 		{
 			dedupingInterval: 300000,
 			revalidateOnFocus: false,
@@ -105,8 +100,6 @@ export function useInventoryPage() {
 		setSelectedProduct,
 		handleEditProduct,
 		handleDeleteProduct,
-		handleUpdateProduct,
-		handleConfirmDelete,
 		refreshProducts,
 		isOpen,
 		onOpen,
@@ -122,5 +115,6 @@ export function useInventoryPage() {
 		isLoading,
 		isValidating,
 		isAuthChecking,
+		hasPermission,
 	};
 }

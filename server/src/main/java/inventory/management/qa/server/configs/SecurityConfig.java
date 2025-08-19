@@ -37,6 +37,8 @@ public class SecurityConfig {
                                         .requestMatchers(
                                                 HttpMethod.GET, "/api/v1/notifications/stream")
                                         .permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/actuator/**")
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated())
                 .oauth2ResourceServer(

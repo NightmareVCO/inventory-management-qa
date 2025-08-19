@@ -91,4 +91,8 @@ public class ProductService {
 
         return existingProduct;
     }
+
+    public long countByQuantityLessThanMinStock() {
+        return productRepository.countByQuantityLessThanMinStock();
+    }
 }

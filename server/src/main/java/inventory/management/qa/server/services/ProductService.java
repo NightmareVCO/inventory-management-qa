@@ -40,8 +40,8 @@ public class ProductService {
         existingProduct.setDescription(product.getDescription());
         existingProduct.setCategory(product.getCategory());
         existingProduct.setPrice(product.getPrice());
-        existingProduct.setQuantity(product.getQuantity());
         existingProduct.setOlderQuantity(existingProduct.getQuantity());
+        existingProduct.setQuantity(product.getQuantity());
         existingProduct.setMinStock(product.getMinStock());
 
         if (isLowStock(existingProduct)) {

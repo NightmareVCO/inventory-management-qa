@@ -8,15 +8,10 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-
-import { Routes } from '@/lib/constants/routes.constants';
-import useHeroWithIllustration from '@/lib/hooks/useHeroWithIllustration';
-import Illustration from './illustration/Illustration';
+import Illustration from '@components/hero/illustration/Illustration';
+import { Routes } from '@lib/constants/routes.constants';
 
 export default function HeroWithIllustration() {
-	const { isAuthenticated, hasPermission, goToLogin } =
-		useHeroWithIllustration();
-
 	return (
 		<Container maxW={'7xl'}>
 			<Stack
@@ -44,48 +39,19 @@ export default function HeroWithIllustration() {
 					and flexible.
 				</Text>
 				<Stack spacing={6} direction={'row'}>
-					{isAuthenticated && hasPermission && (
-						<Button
-							as={'a'}
-							href={Routes.Inventory}
-							display={{ base: 'none', md: 'inline-flex' }}
-							fontSize={'sm'}
-							colorScheme={'white'}
-							bg={'turquoise.700'}
-							_hover={{
-								bg: 'turquoise.600',
-							}}
-						>
-							Go to Inventory
-						</Button>
-					)}
-					{!isAuthenticated && (
-						<Button
-							display={{ base: 'none', md: 'inline-flex' }}
-							fontSize={'sm'}
-							colorScheme={'white'}
-							bg={'turquoise.700'}
-							onClick={goToLogin}
-							_hover={{
-								bg: 'turquoise.600',
-							}}
-						>
-							Go to Inventory
-						</Button>
-					)}
-					{isAuthenticated && !hasPermission && (
-						<Button
-							display={{ base: 'none', md: 'inline-flex' }}
-							fontSize={'sm'}
-							colorScheme={'white'}
-							bg={'turquoise.700'}
-							_hover={{
-								bg: 'turquoise.600',
-							}}
-						>
-							Welcome
-						</Button>
-					)}
+					<Button
+						as={'a'}
+						href={Routes.Inventory}
+						display={{ base: 'none', md: 'inline-flex' }}
+						fontSize={'sm'}
+						colorScheme={'white'}
+						bg={'turquoise.700'}
+						_hover={{
+							bg: 'turquoise.600',
+						}}
+					>
+						Go to Inventory
+					</Button>
 				</Stack>
 			</Stack>
 		</Container>

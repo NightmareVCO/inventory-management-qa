@@ -27,11 +27,11 @@ export default function InventoryPage() {
 		onEditClose,
 		isDeleteOpen,
 		onDeleteClose,
-		handleConfirmDelete,
 		handleDeleteProduct,
 		products,
 		isLoading,
 		isAuthChecking,
+		hasPermission,
 	} = useInventoryPage();
 
 	if (isAuthChecking || isLoading) {
@@ -71,6 +71,7 @@ export default function InventoryPage() {
 									bg: 'turquoise.600',
 								}}
 								w={{ base: '100%', md: 'auto' }}
+								isDisabled={!hasPermission}
 							>
 								Add Product
 							</Button>
@@ -122,7 +123,6 @@ export default function InventoryPage() {
 					isOpen={isDeleteOpen}
 					onClose={onDeleteClose}
 					product={selectedProduct}
-					onDelete={handleConfirmDelete}
 				/>
 			</SidebarWithHeader>
 		</main>

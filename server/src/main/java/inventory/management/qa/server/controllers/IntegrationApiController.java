@@ -1,7 +1,6 @@
 package inventory.management.qa.server.controllers;
 
 import inventory.management.qa.server.dtos.PaginatedResponseDTO;
-import inventory.management.qa.server.dtos.ProductResponseDTO;
 import inventory.management.qa.server.dtos.ReducedProductResponseDTO;
 import inventory.management.qa.server.entities.Product;
 import inventory.management.qa.server.mappers.ProductMapper;

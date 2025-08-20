@@ -23,6 +23,7 @@ EXPOSE 3000
 ENV PORT=3000
 
 RUN corepack enable pnpm
+
 CMD ["pnpm", "dev"]
 
 FROM base AS builder
@@ -45,7 +46,6 @@ COPY --from=builder /app/public ./public
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
 
 USER nextjs
 

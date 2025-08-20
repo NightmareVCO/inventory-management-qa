@@ -4,9 +4,7 @@ export type UseChangesAccordionProps = {
 	productChange: ProductChanges;
 };
 
-export function useChangesAccordion({
-	productChange,
-}: UseChangesAccordionProps) {
+export function useChangesAccordion() {
 	const changeTitle = (productChange: ProductChanges) => {
 		switch (productChange.revType) {
 			case 'ADD':

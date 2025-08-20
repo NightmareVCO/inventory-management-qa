@@ -1,10 +1,12 @@
-# to run: docker compose -f docker/dev/docker-compose.yml up -d --build
+# to run in root: docker compose -f docker/dev/docker-compose.yml up -d --build
 services:
   inventory-frontend:
+    container_name: dev-inventory-frontend
     build:
       context: ../../client
       dockerfile: Dockerfile
       target: dev
+    restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
@@ -18,7 +20,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
       NEXT_PUBLIC_KEYCLOAK_URL: http://localhost:7080
-      NEXT_PUBLIC_KEYCLOAK_AUTH_URL: http://localhost-auth:7080/realms/inventory-realm/account
+      NEXT_PUBLIC_KEYCLOAK_AUTH_URL: http://localhost:7080/realms/inventory-realm/account
       NEXT_PUBLIC_KEYCLOAK_REALM: inventory-realm
       NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: inventory-frontend
       PUBLIC_KEYCLOAK_USER: vladimircuriel@outlook.com
@@ -29,10 +31,12 @@ services:
       NEXT_KEYCLOAK_LOGIN_ID: http://localhost:7080/realms/inventory-realm/protocol/openid-connect/auth?client_id=inventory-frontend&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&state=f0bf7df6-303e-4398-af50-0b6a566cba77&response_mode=fragment&response_type=code&scope=openid&nonce=8fc417cb-f39f-4e11-ab78-e45217d6a7df&code_challenge=jM6XGojdokuccskDzkeDM0R3sYRGtjIvntofAr48LwU&code_challenge_method=S256
 
   inventory-backend:
+    container_name: dev-inventory-backend
     build:
       context: ../../server
       dockerfile: Dockerfile
       target: dev
+    restart: unless-stopped
     ports:
       - "8080:8080"
     volumes:
@@ -47,8 +51,8 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       JWT_AUTH_CONVERTER_RESOURCE_ID: inventory-backend
       JWT_AUTH_CONVERTER_PRINCIPAL_ATTRIBUTE: preferred_username
-      JWT_AUTH_CONVERTER_JWT_ISSUER_URI: http://localhost:7080/realms/inventory-realm
-      JWT_AUTH_CONVERTER_JWT_JWK_SET_URI: http://localhost:7080/realms/inventory-realm/protocol/openid-connect/certs
+      JWT_AUTH_CONVERTER_JWT_ISSUER_URI: http://keycloak-auth:7080/realms/inventory-realm
+      JWT_AUTH_CONVERTER_JWT_JWK_SET_URI: http://keycloak-auth:7080/realms/inventory-realm/protocol/openid-connect/certs
       SPRING_HIBERNATE_ENVERS_ENABLED: true
       SPRING_HIBERNATE_ENVERS_AUDIT_TABLE_SUFFIX: _logs
       SPRING_HIBERNATE_ENVERS_STORE_DATA_AT_DELETE: true
@@ -57,9 +61,9 @@ services:
       SPRING_MANAGEMENT_METRICS_TAGS_APPLICATION: fuji-inventory
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
-      interval: 10s
+      interval: 15s
       timeout: 3s
-      retries: 5
+      retries: 15
     depends_on:
       keycloak-auth:
         condition: service_healthy
@@ -67,7 +71,9 @@ services:
         condition: service_healthy
 
   inventory-db:
+    container_name: dev-inventory-db
     image: postgres:17.5-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -81,7 +87,9 @@ services:
       retries: 3
 
   postgres-exporter:
+    container_name: dev-postgres-exporter
     image: prometheuscommunity/postgres-exporter
+    restart: unless-stopped
     environment:
       DATA_SOURCE_NAME: "postgresql://postgres:password@inventory-db:5432/inventory-db?sslmode=disable"
     depends_on:
@@ -91,8 +99,9 @@ services:
      - "9187:9187"
 
   pg-admin:
+    container_name: dev-pg-admin
     image: dpage/pgadmin4
-    restart: always
+    restart: unless-stopped
     ports:
       - "8083:80"
     environment:
@@ -103,12 +112,16 @@ services:
         condition: service_healthy
 
   prometheus:
-    image: prom/prometheus
-    container_name: prometheus
+    container_name: dev-prometheus
+    build:
+      context: ../../prometheus
+      dockerfile: Dockerfile
+      target: dev
+    restart: unless-stopped
     ports:
       - "9090:9090"
     volumes:
-      - ../../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../../prometheus/prometheus.development.yml:/etc/prometheus/prometheus.yml:ro
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--timeout=5", "http://localhost:9090/-/ready"]
       interval: 30s
@@ -117,15 +130,17 @@ services:
       start_period: 30s
 
   grafana:
-    image: grafana/grafana
-    container_name: grafana
+    container_name: dev-grafana
+    build:
+      context: ../../grafana
+      dockerfile: Dockerfile
+      target: dev
+    restart: unless-stopped
     ports:
       - "3001:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - ../../grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       prometheus:
         condition: service_started
@@ -133,7 +148,12 @@ services:
         condition: service_started
 
   keycloak-auth:
-    image: quay.io/keycloak/keycloak:26.2.5
+    container_name: dev-keycloak-auth
+    build:
+      context: ../../keycloak
+      dockerfile: Dockerfile
+      target: dev
+    restart: unless-stopped
     environment:
       KC_HOSTNAME: localhost
       KC_HOSTNAME_PORT: 7080
@@ -142,8 +162,7 @@ services:
       KC_HEALTH_ENABLED: "true"
       KC_LOG_LEVEL: info
     volumes:
-      - keycloak_dev_data:/opt/keycloak/data
-      - ../../keycloak/inventory-realm-realm.json:/opt/keycloak/data/import/realm.json
+      - keycloak_dev-data:/opt/keycloak/data
     ports:
       - "7080:7080"
       - "9000:9000"
@@ -155,4 +174,5 @@ services:
     command: [ "start-dev", "--http-port", "7080", "--import-realm" ]
 
 volumes:
-  keycloak_dev_data:
+  keycloak_dev-data:
+

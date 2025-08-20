@@ -10,9 +10,9 @@ export function useKeycloak() {
 	const [keycloak] = useState(
 		() =>
 			new Keycloak({
-				url: NEXT_KEYCLOAK_URL,
-				realm: NEXT_KEYCLOAK_REALM,
-				clientId: NEXT_KEYCLOAK_CLIENT_ID,
+				url: NEXT_KEYCLOAK_URL ?? '',
+				realm: NEXT_KEYCLOAK_REALM ?? '',
+				clientId: NEXT_KEYCLOAK_CLIENT_ID ?? '',
 			}),
 	);
 

@@ -3,8 +3,8 @@ Feature: CRUD operations on products
   Scenario: Authenticated user creates a product
     Given An user with username "admin@admin.com" and password "admin" is authenticated
     When The user creates a product with the following information:
-      | name        | description                   | price  | category    | quantity |
-      | Test Product | Description for testing product | 19.99 | ELECTRONICS | 20  |
+      | name         | description                     | price | category    | quantity | minStock |
+      | Test Product | Description for testing product | 19.99 | ELECTRONICS | 20       | 10       |
     Then The product is successfully created
     And The response status code is 201
 
@@ -17,8 +17,8 @@ Feature: CRUD operations on products
   Scenario: Authenticated user updates a product
     Given An user with username "admin@admin.com" and password "admin" is authenticated
     When The user updates the created product using the following information:
-      | name            | description               | price  | category  | quantity |
-      | Updated Product | Updated product description | 29.99 | TOYS      | 15       |
+      | name            | description               | price  | category  | quantity | minStock |
+      | Updated Product | Updated product description | 29.99 | TOYS      | 15      | 10       |
     Then The response status code is 200
 
   Scenario: Authenticated user retrieves all product
@@ -56,15 +56,15 @@ Feature: CRUD operations on products
   Scenario: Unauthenticated user attempts to create a product
     Given An unauthenticated user
     When The user creates a product with the following information:
-      | name        | description                   | price  | category    | quantity |
-      | Test Product | Description for testing product | 19.99 | ELECTRONICS | 20  |
+      | name        | description                      | price | category    | quantity | minStock |
+      | Test Product | Description for testing product | 19.99 | ELECTRONICS | 20       | 10       |
     Then The response status code is 401
 
   Scenario: Authenticated user attempts to update a product with invalid data
     Given An user with username "admin@admin.com" and password "admin" is authenticated
     When The user updates the created product using the following information:
-      | name            | description                     | price  | category   | quantity |
-      | Invalid Product | Invalid description for product | -5.00 | ELECTRONICS | 0        |
+      | name            | description                     | price  | category   | quantity | minStock |
+      | Invalid Product | Invalid description for product | -5.00 | ELECTRONICS | 0        | -1       |
     Then The response status code is 400
 
   Scenario: Unauthenticated user attempts to retrieve all products
@@ -87,8 +87,8 @@ Feature: CRUD operations on products
   Scenario: Authenticated user attempts to update a product that does not exist
     Given An user with username "admin@admin.com" and password "admin" is authenticated
     When The user attempts to update a product that does not exist with the following information:
-      | name        | description                   | price  | category    | quantity |
-      | Nonexistent Product | Description for nonexistent product | 19.99 | ELECTRONICS | 20  |
+      | name                | description                         | price | category    | quantity | minStock |
+      | Nonexistent Product | Description for nonexistent product | 19.99 | ELECTRONICS | 20       | 10       |
     Then The response status code is 404
 
   Scenario: Employee user attempts to delete a product

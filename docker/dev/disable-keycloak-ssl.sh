@@ -1,4 +1,4 @@
-docker exec -it dev-keycloak-auth-1 bash -c "
+docker exec -it dev-keycloak-auth bash -c "
   cd /opt/keycloak/bin && \
   ./kcadm.sh config credentials --server http://localhost:7080 --realm master --user admin --password admin && \
   ./kcadm.sh update realms/master -s sslRequired=NONE && \

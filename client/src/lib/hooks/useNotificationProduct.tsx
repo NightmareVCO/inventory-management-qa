@@ -1,13 +1,13 @@
 import { useToast } from '@chakra-ui/react';
+import { NEXT_PUBLIC_API_URL } from '@lib/constants/config.constants';
 import {
 	deleteNotification,
 	getAllNotifications,
 	saveNotification,
 } from '@lib/db/notificationsDB';
+import { useKeycloak } from '@lib/hooks/useKeycloak';
 import type { Notification } from '@lib/model/notification.model';
 import { useCallback, useEffect, useState } from 'react';
-import { NEXT_PUBLIC_API_URL } from '../constants/config.constants';
-import { useKeycloak } from './useKeycloak';
 
 const API_URL = NEXT_PUBLIC_API_URL;
 export default function useNotificationProduct() {

@@ -25,4 +25,6 @@ RUN mkdir /app/logs
 
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/app.jar
 
+USER spring
+
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

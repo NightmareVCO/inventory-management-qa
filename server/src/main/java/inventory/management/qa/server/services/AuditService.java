@@ -105,10 +105,11 @@ public class AuditService {
 
     public Map<String, Long> getValueOfDispatchedProductsByCategory() {
         String query =
-                "SELECT p.category, COALESCE(SUM(p.price), 0) " +
+                "SELECT p.category, COALESCE(SUM(p.price * (p.older_quantity - p.quantity)), 0) " +
                         "FROM product_logs p " +
                         "JOIN revision_info r ON p.rev = r.id " +
                         "WHERE p.revtype = ? " +
+                        "AND p.quantity < p.older_quantity " +
                         "GROUP BY p.category";
 
         List<Object[]> results = entityManager.createNativeQuery(query)

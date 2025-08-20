@@ -9,14 +9,8 @@ const LOGIN_PAGE =
 setup('authenticate with Keycloak', async ({ page }) => {
 	await page.goto(LOGIN_PAGE);
 
-	await page.fill(
-		'input#username',
-		process.env.PUBLIC_KEYCLOAK_USER ?? 'vladimircuriel@outlook.com',
-	);
-	await page.fill(
-		'input#password',
-		process.env.PUBLIC_KEYCLOAK_PASSWORD ?? 'vladimir',
-	);
+	await page.fill('input#username', process.env.PUBLIC_KEYCLOAK_USER ?? '');
+	await page.fill('input#password', process.env.PUBLIC_KEYCLOAK_PASSWORD ?? '');
 
 	await page.click('button[type="submit"]');
 	await page.waitForURL('http://localhost:3000/');

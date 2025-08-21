@@ -1,0 +1,18 @@
+declare namespace NodeJS {
+	interface ProcessEnv {
+		NEXT_PUBLIC_API_URL: string;
+		NEXT_KEYCLOAK_URL: string;
+		NEXT_KEYCLOAK_AUTH_URL: string;
+		NEXT_KEYCLOAK_REALM: string;
+		NEXT_KEYCLOAK_CLIENT_ID: string;
+
+		PUBLIC_KEYCLOAK_USER: string;
+		PUBLIC_KEYCLOAK_PASSWORD: string;
+
+		PUBLIC_KEYCLOAK_USER_NO_ROLE: string;
+		PUBLIC_KEYCLOAK_PASSWORD_NO_ROLE: string;
+
+		NEXT_KEYCLOAK_REALM_BACKEND: string;
+		NEXT_KEYCLOAK_LOGIN_ID: string;
+	}
+}

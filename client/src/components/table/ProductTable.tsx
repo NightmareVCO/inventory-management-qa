@@ -1,6 +1,5 @@
 'use client';
 
-import useAuth from '@lib/hooks/useAuth';
 import {
 	Badge,
 	Box,
@@ -18,10 +17,11 @@ import {
 	Tr,
 } from '@chakra-ui/react';
 import ProductTableSkeleton from '@components/skeletons/TableSkeleton';
+import { Routes } from '@lib/constants/routes.constants';
+import useAuth from '@lib/hooks/useAuth';
 import { useProductTable } from '@lib/hooks/useProductTable';
 import type { Product } from '@lib/model/product.model';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { Routes } from '@lib/constants/routes.constants';
 
 interface ProductTableProps {
 	products: Product[];

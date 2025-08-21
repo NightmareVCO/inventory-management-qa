@@ -1,0 +1,118 @@
+# to run: docker compose -f docker/dev/docker-compose.yml up -d --build
+services:
+  inventory-frontend:
+    container_name: fuji-inventory-frontend
+    image: nightmarevco/inventory-frontend:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env.production
+    depends_on:
+      keycloak-auth:
+        condition: service_healthy
+      inventory-backend:
+        condition: service_healthy
+
+  inventory-backend:
+    container_name: fuji-inventory-backend
+    image: nightmarevco/inventory-backend:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./server/.env.production
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 15s
+      timeout: 3s
+      retries: 15
+    depends_on:
+      keycloak-auth:
+        condition: service_healthy
+      inventory-db:
+        condition: service_healthy
+
+  inventory-db:
+    container_name: fuji-inventory-db
+    image: postgres:17.5-alpine
+    restart: always
+    volumes:
+      - inventory-db_data:/var/lib/postgresql/data
+    env_file:
+      - ./db/.env.production
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U postgres -d inventory-db'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  postgres-exporter:
+    container_name: fuji-postgres-exporter
+    image: prometheuscommunity/postgres-exporter
+    restart: always
+    env_file:
+      - ./db-exporter/.env.production
+    depends_on:
+      inventory-db:
+        condition: service_healthy
+
+  pg-admin:
+    container_name: fuji-pg-admin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "8083:80"
+    env_file:
+      - ./pg-admin/.env.production
+    depends_on:
+      inventory-db:
+        condition: service_healthy
+
+  prometheus:
+    container_name: fuji-prometheus
+    image: nightmarevco/prometheus:latest
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--timeout=5", "http://localhost:9090/-/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  grafana:
+    container_name: fuji-grafana
+    image: nightmarevco/grafana:latest
+    restart: always
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./grafana/.env.production
+    depends_on:
+      prometheus:
+        condition: service_started
+      postgres-exporter:
+        condition: service_started
+
+  keycloak-auth:
+    container_name: fuji-keycloak-auth
+    image: nightmarevco/keycloak:latest
+    restart: always
+    env_file:
+      - ./keycloak/.env.production
+    volumes:
+      - keycloak_dev_data:/opt/keycloak/data
+    ports:
+      - "7080:7080"
+      - "9000:9000"
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000;echo -e 'GET /health/ready HTTP/1.1\\r\\nhost: http://localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    command: [ "start" ]
+
+volumes:
+  keycloak_dev_data:
+  inventory-db_data:
+

@@ -7,8 +7,6 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['host.docker.internal:8080']
-      # cuando este todo en docker
-      # - targets: ['app:8080']
   - job_name: 'inventory-db'
     static_configs:
       - targets: ['postgres-exporter:9187']

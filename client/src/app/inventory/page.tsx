@@ -14,7 +14,7 @@ import SidebarWithHeader from '@components/navigation/sidebar/SidebarWithBanner'
 import Pagination from '@components/pagination/Pagination';
 import ProductSearch from '@components/search/ProductSearch';
 import ProductTable from '@components/table/ProductTable';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
+import useInventoryPage from '@lib/hooks/useInventoryPage';
 
 export default function InventoryPage() {
 	const {

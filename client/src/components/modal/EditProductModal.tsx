@@ -23,10 +23,10 @@ import {
 	useToast,
 	VStack,
 } from '@chakra-ui/react';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
-import { useProductForm } from '@lib/hooks/useProductForm';
+import useAuth from '@lib/hooks/useAuth';
+import useInventoryPage from '@lib/hooks/useInventoryPage';
+import useProductForm from '@lib/hooks/useProductForm';
 import type { Product } from '@lib/model/product.model';
-import { useKeycloak } from '@react-keycloak/web';
 import { useEffect } from 'react';
 
 export const PRODUCT_CATEGORIES = [
@@ -53,7 +53,7 @@ export default function EditProductModal({
 	onUpdate,
 }: EditProductModalProps) {
 	const toast = useToast();
-	const { keycloak } = useKeycloak();
+	const { token } = useAuth({});
 	const { refreshProducts } = useInventoryPage();
 
 	const {
@@ -68,7 +68,7 @@ export default function EditProductModal({
 	} = useProductForm({
 		mode: 'edit',
 		product: product,
-		token: keycloak.token ?? '',
+		token: token ?? '',
 		onSuccess: (data) => {
 			toast({
 				title: 'Product updated',

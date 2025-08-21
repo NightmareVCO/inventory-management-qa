@@ -12,7 +12,7 @@ export default function useDashboardPage() {
 		redirectAfterLogin: Routes.Dashboard,
 	});
 
-	const url = `${API_URL}/report/products`;
+	const url = `${API_URL}/reports/products`;
 	const headers = {
 		Authorization: `Bearer ${token}`,
 	};

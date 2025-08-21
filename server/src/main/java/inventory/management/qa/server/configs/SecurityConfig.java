@@ -1,12 +1,8 @@
 /* (C)2025 */
 package inventory.management.qa.server.configs;
 
-import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -59,10 +55,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
-                "http://inventory-frontend:3000"
-        ));
+        configuration.setAllowedOrigins(
+                Arrays.asList("http://localhost:3000", "http://inventory-frontend:3000"));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

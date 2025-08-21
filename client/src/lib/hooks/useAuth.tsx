@@ -57,6 +57,12 @@ export default function useAuth({ redirectAfterLogin }: UseAuthProps) {
 		});
 	}, [keycloak.login, redirectAfterLogin]);
 
+	const logout = useCallback(() => {
+		keycloak.logout({
+			redirectUri: window.location.origin + Routes.Home,
+		});
+	}, [keycloak.logout]);
+
 	useEffect(() => {
 		if (!initialized) {
 			setIsAuthChecking(true);
@@ -120,5 +126,6 @@ export default function useAuth({ redirectAfterLogin }: UseAuthProps) {
 		hasAdminPermission,
 		currentUser,
 		goToLogin,
+		logout,
 	};
 }

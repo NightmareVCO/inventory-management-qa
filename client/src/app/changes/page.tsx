@@ -5,7 +5,7 @@ import AccordionChange from '@components/accordion/ChangesAccordion';
 import LoadingScreen from '@components/loading/LoadingScreen';
 import SidebarWithHeader from '@components/navigation/sidebar/SidebarWithBanner';
 import Pagination from '@components/pagination/Pagination';
-import { useChangesPage } from '@lib/hooks/useChangesPage';
+import useChangesPage from '@lib/hooks/useChangesPage';
 import type { ProductChanges } from '@/lib/model/productChanges.model';
 
 export default function ChangesPage() {

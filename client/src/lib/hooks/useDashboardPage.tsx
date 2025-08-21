@@ -3,6 +3,7 @@ import { Routes } from '@lib/constants/routes.constants';
 import useAuth from '@lib/hooks/useAuth';
 import type { ProductsReportDTO } from '@lib/model/dto/ProductsReports.dto';
 import { fetcher } from '@lib/swr/fetcher';
+import { useMemo } from 'react';
 import useSWR from 'swr';
 
 const API_URL = NEXT_PUBLIC_API_URL;
@@ -33,6 +34,12 @@ export default function useDashboardPage() {
 		mutate();
 	};
 
+	const barChartData = useMemo(() => {
+		return Object.entries(data?.valueOfDispatchedProductsByCategory || {}).map(
+			([category, value]) => ({ category, value }),
+		);
+	}, [data]);
+
 	return {
 		reportData: data,
 		error,
@@ -40,6 +47,7 @@ export default function useDashboardPage() {
 		isValidating,
 		isAuthChecking,
 		hasPermission,
+		barChartData,
 		refreshReport,
 	};
 }

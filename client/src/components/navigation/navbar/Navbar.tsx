@@ -21,15 +21,16 @@ import {
 	useColorModeValue,
 	useDisclosure,
 } from '@chakra-ui/react';
-import { useKeycloak } from '@react-keycloak/web';
+import NavbarImagotipo from '@components/brand/NavbarImagotipo';
+import { Routes } from '@lib/constants/routes.constants';
+import useAuth from '@lib/hooks/useAuth';
 import Link from 'next/link';
-import NavbarImagotipo from '@/components/brand/NavbarImagotipo';
-import { Routes } from '@/lib/constants/routes.constants';
 
 export default function WithSubNavigation() {
 	const { isOpen, onToggle } = useDisclosure();
-	const { keycloak } = useKeycloak();
-	const isAuthenticated = keycloak.authenticated;
+	const { goToLogin, logout, isAuthenticated } = useAuth({
+		redirectAfterLogin: Routes.Home,
+	});
 
 	return (
 		<Box>
@@ -81,11 +82,7 @@ export default function WithSubNavigation() {
 							fontWeight={600}
 							color={'white'}
 							bg={'turquoise.700'}
-							onClick={() =>
-								keycloak.login({
-									redirectUri: window.location.origin + Routes.Home,
-								})
-							}
+							onClick={goToLogin}
 							_hover={{
 								bg: 'turquoise.600',
 							}}
@@ -103,9 +100,7 @@ export default function WithSubNavigation() {
 							_hover={{
 								bg: 'orange.500',
 							}}
-							onClick={() =>
-								keycloak.logout({ redirectUri: window.location.origin })
-							}
+							onClick={logout}
 						>
 							LogOut
 						</Button>

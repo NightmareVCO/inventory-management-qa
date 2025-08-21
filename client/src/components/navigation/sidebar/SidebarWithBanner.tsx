@@ -22,8 +22,8 @@ import {
 	VStack,
 } from '@chakra-ui/react';
 import ProductNotification from '@components/card/ProductNotificationCard';
+import useAuth from '@lib/hooks/useAuth';
 import useNotificationProduct from '@lib/hooks/useNotificationProduct';
-import { useKeycloak } from '@react-keycloak/web';
 import { usePathname } from 'next/navigation';
 import type { IconType } from 'react-icons';
 import {
@@ -58,7 +58,7 @@ interface SidebarProps extends BoxProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-	{ name: 'Home', href: '#', icon: FiHome },
+	{ name: 'Dashboard', href: '/dashboard', icon: FiHome },
 	{ name: 'Inventory', href: '/inventory', icon: FiGrid },
 	{ name: 'Stock', href: '/stock', icon: FiBox },
 	{ name: 'Changes', href: '/changes', icon: FiLayers },
@@ -133,14 +133,8 @@ const NavItem = ({ icon, href, children, ...rest }: NavItemProps) => {
 };
 
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-	const { keycloak } = useKeycloak();
+	const { currentUser } = useAuth({});
 	const { notifications, handleDeleteNotification } = useNotificationProduct();
-
-	const currentUser = {
-		name: keycloak?.tokenParsed?.given_name ?? 'No Name',
-		lastName: keycloak?.tokenParsed?.family_name ?? 'No Last Name',
-		role: keycloak?.resourceAccess?.['inventory-backend']?.roles,
-	};
 
 	return (
 		<Flex
@@ -221,12 +215,6 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 								</Box>
 							</HStack>
 						</MenuButton>
-						{/* <MenuList
-							bg={useColorModeValue('white', 'gray.900')}
-							borderColor={useColorModeValue('gray.200', 'gray.700')}
-						>
-							<MenuItem>Sign out</MenuItem>
-						</MenuList> */}
 					</Menu>
 				</Flex>
 			</HStack>

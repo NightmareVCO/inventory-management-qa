@@ -23,7 +23,7 @@ type UseProductFormProps = {
 	token: string;
 };
 
-export function useProductForm({
+export default function useProductForm({
 	mode = 'create',
 	product,
 	onSuccess,

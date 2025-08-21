@@ -11,7 +11,7 @@ import useSWR from 'swr';
 
 const API_URL = NEXT_PUBLIC_API_URL;
 
-export function useInventoryPage() {
+export default function useInventoryPage() {
 	const searchParams = useSearchParams();
 	const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
 		undefined,

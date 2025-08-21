@@ -9,7 +9,7 @@ import useSWR from 'swr';
 
 const API_URL = NEXT_PUBLIC_API_URL;
 
-export function useChangesPage() {
+export default function useChangesPage() {
 	const searchParams = useSearchParams();
 
 	const { isAuthChecking, shouldFetch, token } = useAuth({

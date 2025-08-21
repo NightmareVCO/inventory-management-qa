@@ -10,9 +10,22 @@ import LoadingScreen from '@components/loading/LoadingScreen';
 import SidebarWithHeader from '@components/navigation/sidebar/SidebarWithBanner';
 import Pagination from '@components/pagination/Pagination';
 import ProductSearch from '@components/search/ProductSearch';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
+import useInventoryPage from '@lib/hooks/useInventoryPage';
+import { Suspense } from 'react';
 
 export default function StockPage() {
+	return (
+		<main>
+			<SidebarWithHeader>
+				<Suspense fallback={<LoadingScreen />}>
+					<StockContent />
+				</Suspense>
+			</SidebarWithHeader>
+		</main>
+	);
+}
+
+function StockContent() {
 	const { products, isAuthChecking } = useInventoryPage();
 
 	if (isAuthChecking) {
@@ -20,42 +33,38 @@ export default function StockPage() {
 	}
 
 	return (
-		<main>
-			<SidebarWithHeader>
-				<Flex direction="column" gap={4}>
-					<Flex
-						direction={{ base: 'column', md: 'row' }}
-						gap={4}
-						w="100%"
-						align={{ base: 'stretch', md: 'flex-end' }}
-					>
-						<Flex flex={{ base: '1', md: '1' }}>
-							<ProductSearch />
-						</Flex>
-
-						<Flex
-							direction={{ base: 'column', md: 'row' }}
-							gap={3}
-							flex="1"
-							align="stretch"
-							justify={{ base: 'flex-start', md: 'flex-end' }}
-						>
-							<FilterByMinAmount />
-							<FilterByMaxAmount />
-							<FilterByCategory />
-							<FilterByLowStock />
-						</Flex>
-					</Flex>
-					{products.content?.map((product) => (
-						<ProductStockControllerCard key={product.id} product={product} />
-					))}
-					<Pagination
-						total={products.totalElements}
-						colorScheme={'orange'}
-						perPage={products.pageSize}
-					/>
+		<Flex direction="column" gap={4}>
+			<Flex
+				direction={{ base: 'column', md: 'row' }}
+				gap={4}
+				w="100%"
+				align={{ base: 'stretch', md: 'flex-end' }}
+			>
+				<Flex flex={{ base: '1', md: '1' }}>
+					<ProductSearch />
 				</Flex>
-			</SidebarWithHeader>
-		</main>
+
+				<Flex
+					direction={{ base: 'column', md: 'row' }}
+					gap={3}
+					flex="1"
+					align="stretch"
+					justify={{ base: 'flex-start', md: 'flex-end' }}
+				>
+					<FilterByMinAmount />
+					<FilterByMaxAmount />
+					<FilterByCategory />
+					<FilterByLowStock />
+				</Flex>
+			</Flex>
+			{products.content?.map((product) => (
+				<ProductStockControllerCard key={product.id} product={product} />
+			))}
+			<Pagination
+				total={products.totalElements}
+				colorScheme={'orange'}
+				perPage={products.pageSize}
+			/>
+		</Flex>
 	);
 }

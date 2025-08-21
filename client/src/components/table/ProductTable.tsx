@@ -28,6 +28,7 @@ interface ProductTableProps {
 	onEdit?: (product: Product) => void;
 	onDelete?: (product: Product) => void;
 	isLoading?: boolean;
+	title?: string;
 }
 
 export default function ProductTable({
@@ -35,6 +36,7 @@ export default function ProductTable({
 	onEdit,
 	onDelete,
 	isLoading = false,
+	title = 'Inventory Products',
 }: ProductTableProps) {
 	const { hasPermission, hasAdminPermission } = useAuth({
 		redirectAfterLogin: Routes.Inventory,
@@ -59,7 +61,7 @@ export default function ProductTable({
 	return (
 		<TableContainer w="100%" bg="white" borderRadius="md" boxShadow="md">
 			<Table size="md">
-				<TableCaption placement="top">Inventory Products</TableCaption>
+				<TableCaption placement="top">{title}</TableCaption>
 				<Thead>
 					<Tr>
 						<Th>Name</Th>
@@ -68,7 +70,7 @@ export default function ProductTable({
 						<Th isNumeric>Price</Th>
 						<Th isNumeric>Quantity</Th>
 						<Th isNumeric>Min Stock</Th>
-						<Th textAlign="center">Actions</Th>
+						{(onEdit || onDelete) && <Th textAlign="center">Actions</Th>}
 					</Tr>
 				</Thead>
 				<Tbody>

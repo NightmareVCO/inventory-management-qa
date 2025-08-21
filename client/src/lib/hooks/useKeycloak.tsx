@@ -6,7 +6,7 @@ import {
 import Keycloak from 'keycloak-js';
 import { useMemo, useState } from 'react';
 
-export function useKeycloak() {
+export default function useKeycloak() {
 	const [keycloak] = useState(
 		() =>
 			new Keycloak({

@@ -10,10 +10,10 @@ import {
 	Button,
 	useToast,
 } from '@chakra-ui/react';
-import { useDeleteProduct } from '@lib/hooks/useDeleteModal';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
+import useAuth from '@lib/hooks/useAuth';
+import useDeleteProduct from '@lib/hooks/useDeleteModal';
+import useInventoryPage from '@lib/hooks/useInventoryPage';
 import type { Product } from '@lib/model/product.model';
-import { useKeycloak } from '@react-keycloak/web';
 import { useRef } from 'react';
 
 type DeleteProductModalProps = {
@@ -32,14 +32,10 @@ export default function DeleteProductModal({
 	const toast = useToast();
 	const cancelRef = useRef<HTMLButtonElement>(null);
 	const { refreshProducts } = useInventoryPage();
-	const { keycloak } = useKeycloak();
-
-	const isAdmin =
-		keycloak.resourceAccess?.['inventory-backend']?.roles?.includes('admin') ||
-		false;
+	const { token, hasAdminPermission } = useAuth({});
 
 	const { deleteProductById, isDeleting } = useDeleteProduct({
-		isAdmin,
+		isAdmin: hasAdminPermission,
 		onSuccess: (productId) => {
 			if (product) {
 				toast({
@@ -69,7 +65,7 @@ export default function DeleteProductModal({
 				isClosable: true,
 			});
 		},
-		token: keycloak.token ?? '',
+		token: token ?? '',
 	});
 
 	const handleDelete = async () => {
@@ -106,7 +102,7 @@ export default function DeleteProductModal({
 							colorScheme="red"
 							onClick={handleDelete}
 							isLoading={isDeleting}
-							isDisabled={!isAdmin}
+							isDisabled={!hasAdminPermission}
 							ml={3}
 							_hover={{
 								bg: 'red.500',

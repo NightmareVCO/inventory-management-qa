@@ -23,9 +23,9 @@ import {
 	useToast,
 	VStack,
 } from '@chakra-ui/react';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
-import { useProductForm } from '@lib/hooks/useProductForm';
-import { useKeycloak } from '@react-keycloak/web';
+import useAuth from '@lib/hooks/useAuth';
+import useInventoryPage from '@lib/hooks/useInventoryPage';
+import useProductForm from '@lib/hooks/useProductForm';
 
 export const PRODUCT_CATEGORIES = [
 	'ELECTRONICS',
@@ -48,7 +48,7 @@ export default function AddProductModal({
 	onClose,
 }: AddProductModalProps) {
 	const toast = useToast();
-	const { keycloak } = useKeycloak();
+	const { token } = useAuth({});
 	const { refreshProducts } = useInventoryPage();
 
 	const {
@@ -83,7 +83,7 @@ export default function AddProductModal({
 				isClosable: true,
 			});
 		},
-		token: keycloak.token ?? '',
+		token: token ?? '',
 	});
 
 	const handleSubmit = async () => {

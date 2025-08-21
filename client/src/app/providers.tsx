@@ -1,7 +1,7 @@
 'use client';
 
 import { ChakraProvider } from '@chakra-ui/react';
-import { useKeycloak } from '@lib/hooks/useKeycloak';
+import useKeycloak from '@lib/hooks/useKeycloak';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import theme from '../styles/customTheme';
 

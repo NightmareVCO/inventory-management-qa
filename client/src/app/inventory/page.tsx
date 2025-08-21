@@ -14,9 +14,22 @@ import SidebarWithHeader from '@components/navigation/sidebar/SidebarWithBanner'
 import Pagination from '@components/pagination/Pagination';
 import ProductSearch from '@components/search/ProductSearch';
 import ProductTable from '@components/table/ProductTable';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
+import useInventoryPage from '@lib/hooks/useInventoryPage';
+import { Suspense } from 'react';
 
 export default function InventoryPage() {
+	return (
+		<main>
+			<SidebarWithHeader>
+				<Suspense fallback={<LoadingScreen />}>
+					<InventoryContent />
+				</Suspense>
+			</SidebarWithHeader>
+		</main>
+	);
+}
+
+function InventoryContent() {
 	const {
 		selectedProduct,
 		handleEditProduct,
@@ -39,92 +52,88 @@ export default function InventoryPage() {
 	}
 
 	return (
-		<main>
-			<SidebarWithHeader>
-				<Flex direction="column" gap={4}>
-					<Flex
-						direction={{ base: 'column', md: 'row' }}
-						justifyContent={{ base: 'center', md: 'space-between' }}
-						alignItems="center"
-						gap={4}
-						flexGrow={1}
-						flexWrap="wrap"
-					>
-						<Flex
-							justifyContent="center"
-							alignItems="center"
-							gap={4}
-							flexWrap="wrap"
-							mb={{ base: 4, md: 0 }}
-						>
-							<Card name="Total Products" quantity={products.totalElements} />
-							{/* <Card name="Out Of Stock" quantity={0} /> */}
-						</Flex>
-						<Flex justifyContent="center" alignItems="center">
-							<Button
-								fontSize={'sm'}
-								fontWeight={600}
-								color={'white'}
-								onClick={onOpen}
-								bg={'turquoise.700'}
-								_hover={{
-									bg: 'turquoise.600',
-								}}
-								w={{ base: '100%', md: 'auto' }}
-								isDisabled={!hasPermission}
-							>
-								Add Product
-							</Button>
-						</Flex>
-					</Flex>
-					<Flex
-						direction={{ base: 'column', md: 'row' }}
-						gap={4}
-						w="100%"
-						align={{ base: 'stretch', md: 'flex-end' }}
-					>
-						<Flex flex={{ base: '1', md: '1' }}>
-							<ProductSearch />
-						</Flex>
-
-						<Flex
-							direction={{ base: 'column', md: 'row' }}
-							gap={3}
-							flex="1"
-							align="stretch"
-							justify={{ base: 'flex-start', md: 'flex-end' }}
-						>
-							<FilterByMinAmount />
-							<FilterByMaxAmount />
-							<FilterByCategory />
-							<FilterByLowStock />
-						</Flex>
-					</Flex>
-					<ProductTable
-						products={products.content}
-						onEdit={handleEditProduct}
-						onDelete={handleDeleteProduct}
-						isLoading={isLoading}
-					/>
-					<Pagination
-						total={products.totalElements}
-						colorScheme={'orange'}
-						perPage={products.pageSize}
-					/>
+		<Flex direction="column" gap={4}>
+			<Flex
+				direction={{ base: 'column', md: 'row' }}
+				justifyContent={{ base: 'center', md: 'space-between' }}
+				alignItems="center"
+				gap={4}
+				flexGrow={1}
+				flexWrap="wrap"
+			>
+				<Flex
+					justifyContent="center"
+					alignItems="center"
+					gap={4}
+					flexWrap="wrap"
+					mb={{ base: 4, md: 0 }}
+				>
+					<Card name="Total Products" quantity={products.totalElements} />
+					{/* <Card name="Out Of Stock" quantity={0} /> */}
 				</Flex>
-				<AddProductModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
-				<EditProductModal
-					isOpen={isEditOpen}
-					onClose={onEditClose}
-					product={selectedProduct}
-					onUpdate={handleEditProduct}
-				/>
-				<DeleteProductModal
-					isOpen={isDeleteOpen}
-					onClose={onDeleteClose}
-					product={selectedProduct}
-				/>
-			</SidebarWithHeader>
-		</main>
+				<Flex justifyContent="center" alignItems="center">
+					<Button
+						fontSize={'sm'}
+						fontWeight={600}
+						color={'white'}
+						onClick={onOpen}
+						bg={'turquoise.700'}
+						_hover={{
+							bg: 'turquoise.600',
+						}}
+						w={{ base: '100%', md: 'auto' }}
+						isDisabled={!hasPermission}
+					>
+						Add Product
+					</Button>
+				</Flex>
+			</Flex>
+			<Flex
+				direction={{ base: 'column', md: 'row' }}
+				gap={4}
+				w="100%"
+				align={{ base: 'stretch', md: 'flex-end' }}
+			>
+				<Flex flex={{ base: '1', md: '1' }}>
+					<ProductSearch />
+				</Flex>
+
+				<Flex
+					direction={{ base: 'column', md: 'row' }}
+					gap={3}
+					flex="1"
+					align="stretch"
+					justify={{ base: 'flex-start', md: 'flex-end' }}
+				>
+					<FilterByMinAmount />
+					<FilterByMaxAmount />
+					<FilterByCategory />
+					<FilterByLowStock />
+				</Flex>
+			</Flex>
+			<ProductTable
+				products={products.content}
+				onEdit={handleEditProduct}
+				onDelete={handleDeleteProduct}
+				isLoading={isLoading}
+			/>
+			<Pagination
+				total={products.totalElements}
+				colorScheme={'orange'}
+				perPage={products.pageSize}
+			/>
+			<AddProductModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
+			<EditProductModal
+				isOpen={isEditOpen}
+				onClose={onEditClose}
+				product={selectedProduct}
+				onUpdate={handleEditProduct}
+			/>
+			<DeleteProductModal
+				isOpen={isDeleteOpen}
+				onClose={onDeleteClose}
+				product={selectedProduct}
+			/>
+		</Flex>
 	);
 }

@@ -13,7 +13,7 @@ type UseDeleteProductProps = {
 	token: string;
 };
 
-export function useDeleteProduct({
+export default function useDeleteProduct({
 	isAdmin = false,
 	onSuccess,
 	onError,

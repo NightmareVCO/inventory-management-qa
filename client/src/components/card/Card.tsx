@@ -20,7 +20,7 @@ export default function Card({
 		<Flex
 			p={4}
 			w="fit"
-			minW="350px"
+			minW="375px"
 			alignItems="center"
 			justifyContent="center"
 		>

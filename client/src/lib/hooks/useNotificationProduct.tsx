@@ -5,7 +5,7 @@ import {
 	getAllNotifications,
 	saveNotification,
 } from '@lib/db/notificationsDB';
-import { useKeycloak } from '@lib/hooks/useKeycloak';
+import useKeycloak from '@lib/hooks/useKeycloak';
 import type { Notification } from '@lib/model/notification.model';
 import { useCallback, useEffect, useState } from 'react';
 

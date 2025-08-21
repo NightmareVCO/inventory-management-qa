@@ -35,9 +35,9 @@ export default function useDashboardPage() {
 	};
 
 	const barChartData = useMemo(() => {
-		return Object.entries(data?.valueOfDispatchedProductsByCategory || {}).map(
-			([category, value]) => ({ category, value }),
-		);
+		return Object.entries(data?.valueOfDispatchedProductsByCategory || {})
+			.map(([category, value]) => ({ category, value }))
+			.sort((a, b) => b.value - a.value);
 	}, [data]);
 
 	return {

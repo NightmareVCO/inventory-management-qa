@@ -9,7 +9,7 @@ import {
 	CardBody,
 	Text,
 } from '@chakra-ui/react';
-import { useChangesAccordion } from '@lib/hooks/useChangesAccordion';
+import useChangesAccordion from '@lib/hooks/useChangesAccordion';
 import type { ProductChanges } from '@lib/model/productChanges.model';
 
 export type ChangesAccordionProps = {
@@ -19,7 +19,7 @@ export type ChangesAccordionProps = {
 export default function AccordionChange({
 	productChange,
 }: ChangesAccordionProps) {
-	const { changeTitle } = useChangesAccordion({ productChange });
+	const { changeTitle } = useChangesAccordion();
 
 	return (
 		<AccordionItem>

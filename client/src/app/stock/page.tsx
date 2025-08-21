@@ -10,7 +10,7 @@ import LoadingScreen from '@components/loading/LoadingScreen';
 import SidebarWithHeader from '@components/navigation/sidebar/SidebarWithBanner';
 import Pagination from '@components/pagination/Pagination';
 import ProductSearch from '@components/search/ProductSearch';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
+import useInventoryPage from '@lib/hooks/useInventoryPage';
 
 export default function StockPage() {
 	const { products, isAuthChecking } = useInventoryPage();

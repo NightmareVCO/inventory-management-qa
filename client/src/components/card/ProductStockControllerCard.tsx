@@ -1,9 +1,9 @@
 import { Box, Button, Flex, Icon, Text, useToast } from '@chakra-ui/react';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
+import useAuth from '@lib/hooks/useAuth';
+import useInventoryPage from '@lib/hooks/useInventoryPage';
 import useProductStockControllerCard from '@lib/hooks/useProductStockControllerCard';
-import { useKeycloak } from '@react-keycloak/web';
+import type { Product } from '@lib/model/product.model';
 import { FiBox } from 'react-icons/fi';
-import type { Product } from '@/lib/model/product.model';
 
 export type ProductStockControllerCardProps = {
 	product: Product;
@@ -13,12 +13,12 @@ export default function ProductStockControllerCard({
 	product,
 }: ProductStockControllerCardProps) {
 	const toast = useToast();
-	const { keycloak } = useKeycloak();
+	const { token } = useAuth({});
 	const { refreshProducts } = useInventoryPage();
 	const { quantity, handleIncrease, handleDecrease } =
 		useProductStockControllerCard({
 			product,
-			token: keycloak.token ?? '',
+			token: token ?? '',
 			onSuccess: (product) => {
 				toast({
 					title: 'Stock updated',

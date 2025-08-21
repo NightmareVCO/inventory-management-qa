@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export type UseAuthProps = {
-	redirectAfterLogin: string;
+	redirectAfterLogin?: string;
 };
 
 const REALM_BACKEND =
@@ -17,6 +17,14 @@ export default function useAuth({ redirectAfterLogin }: UseAuthProps) {
 	const router = useRouter();
 	const { keycloak, initialized } = useKeycloak();
 	const [isAuthChecking, setIsAuthChecking] = useState(true);
+
+	const currentUser = useMemo(() => {
+		return {
+			name: keycloak?.tokenParsed?.given_name ?? 'No Name',
+			lastName: keycloak?.tokenParsed?.family_name ?? 'No Last Name',
+			role: keycloak?.resourceAccess?.[REALM_BACKEND]?.roles || [],
+		};
+	}, [keycloak.tokenParsed, keycloak.resourceAccess]);
 
 	const isAuthenticated = useMemo(() => {
 		return keycloak.authenticated;
@@ -110,6 +118,7 @@ export default function useAuth({ redirectAfterLogin }: UseAuthProps) {
 		isAuthenticated,
 		hasPermission: hasBasePermission,
 		hasAdminPermission,
+		currentUser,
 		goToLogin,
 	};
 }

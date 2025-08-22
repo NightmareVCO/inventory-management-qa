@@ -56,7 +56,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(
-                Arrays.asList("http://localhost:3000", "http://inventory-frontend:3000"));
+                Arrays.asList(
+                        "http://localhost:3000",
+                        "http://inventory-frontend:3000",
+                        "https://fuji.joseantstudio.tech"));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

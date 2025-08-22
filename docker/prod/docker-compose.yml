@@ -1,11 +1,41 @@
 # to run: docker compose -f docker/dev/docker-compose.yml up -d --build
 services:
+  traefik:
+    image: "traefik:v3.4"
+    container_name: "traefik"
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=vladimircuriel@outlook.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.rl-app.ratelimit.average=100"
+      - "traefik.http.middlewares.rl-app.ratelimit.burst=200"
+      - "traefik.http.middlewares.sec-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.sec-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.sec-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.sec-headers.headers.stsPreload=true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - fuji-inventory-traefik
+
   inventory-frontend:
     container_name: fuji-inventory-frontend
     image: nightmarevco/inventory-frontend:latest
     restart: always
-    ports:
-      - "3000:3000"
     env_file:
       - ./client/.env.production
     depends_on:
@@ -13,25 +43,45 @@ services:
         condition: service_healthy
       inventory-backend:
         condition: service_healthy
+    networks:
+      - fuji-inventory-traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fuji-frontend-app.rule=Host(`fuji.joseantstudio.tech`)"
+      - "traefik.http.routers.fuji-frontend-app.service=fuji-frontend-app-service"
+      - "traefik.http.routers.fuji-frontend-app.entrypoints=websecure"
+      - "traefik.http.routers.fuji-frontend-app.priority=1"
+      - "traefik.http.services.fuji-frontend-app-service.loadbalancer.server.port=3000"
+      - "traefik.http.routers.fuji-frontend-app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.fuji-frontend-app.middlewares=rl-app,sec-headers"
 
   inventory-backend:
     container_name: fuji-inventory-backend
     image: nightmarevco/inventory-backend:latest
     restart: always
-    ports:
-      - "8080:8080"
     env_file:
       - ./server/.env.production
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      test: ["CMD", "wget", "--spider", "--quiet", "--tries=1", "--timeout=5", "http://localhost:8080/actuator/health"]
       interval: 15s
       timeout: 3s
-      retries: 15
+      retries: 5
     depends_on:
       keycloak-auth:
         condition: service_healthy
       inventory-db:
         condition: service_healthy
+    networks:
+      - fuji-inventory-traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fuji-backend-app.rule=Host(`backend.fuji.joseantstudio.tech`)"
+      - "traefik.http.routers.fuji-backend-app.service=fuji-backend-app-service"
+      - "traefik.http.routers.fuji-backend-app.entrypoints=websecure"
+      - "traefik.http.routers.fuji-backend-app.priority=1"
+      - "traefik.http.services.fuji-backend-app-service.loadbalancer.server.port=8080"
+      - "traefik.http.routers.fuji-backend-app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.fuji-backend-app.middlewares=rl-app,sec-headers"
 
   inventory-db:
     container_name: fuji-inventory-db
@@ -42,10 +92,12 @@ services:
     env_file:
       - ./db/.env.production
     healthcheck:
-      test: [ "CMD-SHELL", "sh -c 'pg_isready -U postgres -d inventory-db'" ]
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d inventory-db'" ]
       interval: 10s
       timeout: 3s
       retries: 3
+    networks:
+      - fuji-inventory-traefik
 
   postgres-exporter:
     container_name: fuji-postgres-exporter
@@ -56,36 +108,47 @@ services:
     depends_on:
       inventory-db:
         condition: service_healthy
+    networks:
+      - fuji-inventory-traefik
 
   pg-admin:
     container_name: fuji-pg-admin
     image: dpage/pgadmin4
     restart: always
-    ports:
-      - "8083:80"
     env_file:
       - ./pg-admin/.env.production
     depends_on:
       inventory-db:
         condition: service_healthy
+    networks:
+      - fuji-inventory-traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fuji-db-app.rule=Host(`db.fuji.joseantstudio.tech`)"
+      - "traefik.http.routers.fuji-db-app.service=fuji-db-app-service"
+      - "traefik.http.routers.fuji-db-app.entrypoints=websecure"
+      - "traefik.http.routers.fuji-db-app.priority=1"
+      - "traefik.http.services.fuji-db-app-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.fuji-db-app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.fuji-db-app.middlewares=rl-app,sec-headers"
 
   prometheus:
     container_name: fuji-prometheus
-    image: nightmarevco/prometheus:latest
+    image: nightmarevco/inventory-prometheus:latest
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--timeout=5", "http://localhost:9090/-/ready"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+      test: ["CMD", "wget", "--spider", "--quiet", "--tries=1", "--timeout=5", "http://localhost:9090/-/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    networks:
+      - fuji-inventory-traefik
 
   grafana:
     container_name: fuji-grafana
-    image: nightmarevco/grafana:latest
+    image: nightmarevco/inventory-grafana:latest
     restart: always
-    ports:
-      - "3001:3000"
     env_file:
       - ./grafana/.env.production
     depends_on:
@@ -93,24 +156,49 @@ services:
         condition: service_started
       postgres-exporter:
         condition: service_started
+    networks:
+      - fuji-inventory-traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fuji-gf-app.rule=Host(`grafana.fuji.joseantstudio.tech`)"
+      - "traefik.http.routers.fuji-gf-app.service=fuji-gf-app-service"
+      - "traefik.http.routers.fuji-gf-app.entrypoints=websecure"
+      - "traefik.http.routers.fuji-gf-app.priority=1"
+      - "traefik.http.services.fuji-gf-app-service.loadbalancer.server.port=3000"
+      - "traefik.http.routers.fuji-gf-app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.fuji-gf-app.middlewares=rl-app,sec-headers"
 
   keycloak-auth:
     container_name: fuji-keycloak-auth
-    image: nightmarevco/keycloak:latest
+    image: nightmarevco/inventory-keycloak:latest
     restart: always
     env_file:
       - ./keycloak/.env.production
     volumes:
       - keycloak_dev_data:/opt/keycloak/data
-    ports:
-      - "7080:7080"
-      - "9000:9000"
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000;echo -e 'GET /health/ready HTTP/1.1\\r\\nhost: http://localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000;echo -e 'GET /health/ready HTTP/1.1\\r\\nhost: admin.fuji.joseantstudio.tech\\r\\nConnection: close\\r\\n\\r\\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
       interval: 15s
       timeout: 2s
       retries: 15
-    command: [ "start" ]
+    command: [ "start", "--import-realm" ]
+    networks:
+      - fuji-inventory-traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fuji-admin-app.rule=Host(`admin.fuji.joseantstudio.tech`)"
+      - "traefik.http.routers.fuji-admin-app.service=fuji-admin-app-service"
+      - "traefik.http.routers.fuji-admin-app.entrypoints=websecure"
+      - "traefik.http.routers.fuji-admin-app.priority=1"
+      - "traefik.http.services.fuji-admin-app-service.loadbalancer.server.port=7080"
+      - "traefik.http.routers.fuji-admin-app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.fuji-admin-app.middlewares=rl-app,sec-headers"
+      - "traefik.http.middlewares.keycloak-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.keycloak-headers.headers.customrequestheaders.X-Forwarded-Host=admin.fuji.joseantstudio.tech"
+
+networks:
+  fuji-inventory-traefik:
+    external: true
 
 volumes:
   keycloak_dev_data:

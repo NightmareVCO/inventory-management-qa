@@ -4,8 +4,7 @@ services:
     container_name: dev-inventory-frontend
     build:
       context: ../../client
-      dockerfile: Dockerfile
-      target: dev
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -34,8 +33,7 @@ services:
     container_name: dev-inventory-backend
     build:
       context: ../../server
-      dockerfile: Dockerfile
-      target: dev
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -115,8 +113,7 @@ services:
     container_name: dev-prometheus
     build:
       context: ../../prometheus
-      dockerfile: Dockerfile
-      target: dev
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
       - "9090:9090"
@@ -133,8 +130,7 @@ services:
     container_name: dev-grafana
     build:
       context: ../../grafana
-      dockerfile: Dockerfile
-      target: dev
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
       - "3001:3000"
@@ -151,8 +147,7 @@ services:
     container_name: dev-keycloak-auth
     build:
       context: ../../keycloak
-      dockerfile: Dockerfile
-      target: dev
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     environment:
       KC_HOSTNAME: localhost

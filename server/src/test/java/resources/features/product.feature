@@ -1,4 +1,4 @@
-Feature: CRUD operations on products
+Feature: Operations on products
 
   Scenario: Authenticated user creates a product
     Given An user with username "admin@admin.com" and password "admin" is authenticated
@@ -20,6 +20,11 @@ Feature: CRUD operations on products
       | name            | description               | price  | category  | quantity | minStock |
       | Updated Product | Updated product description | 29.99 | TOYS      | 15      | 10       |
     Then The response status code is 200
+
+  Scenario: Authenticated user receive notification when product is on lowStock
+    Given An user with username "admin@admin.com" and password "admin" is authenticated
+    When The user changes the quantity of a product
+    Then The user receives a notification when the product is on low stock
 
   Scenario: Authenticated user retrieves all product
     Given An user with username "admin@admin.com" and password "admin" is authenticated
@@ -100,3 +105,15 @@ Feature: CRUD operations on products
     Given An user with username "admin@admin.com" and password "admin" is authenticated
     When The user deletes the created product
     Then The response status code is 204
+
+  Scenario: Authenticated user retrieves audit revisions for products
+    Given An user with username "admin@admin.com" and password "admin" is authenticated
+    When The user tries to retrieve audit revisions for products
+    Then The audit revisions are successfully retrieved
+    And The response status code is 200
+
+  Scenario: Authenticated user retrieves products report
+    Given An user with username "admin@admin.com" and password "admin" is authenticated
+    When The user retrieves the products report
+    Then The products report is successfully retrieved
+    And The response status code is 200

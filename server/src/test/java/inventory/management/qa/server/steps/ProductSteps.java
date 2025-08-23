@@ -9,17 +9,30 @@ import io.cucumber.java.en.When;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.test.StepVerifier;
 
+import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.UUID;
 
 @CucumberContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ProductSteps {
+    @LocalServerPort
+    private int port;
+
+    private static final int CREATIONS_EXPECTED = 1;
+    private static final int UPDATES_EXPECTED = 2;
+    private static final int DELETIONS_EXPECTED = 1;
 
     private String token;
     private final TestRestTemplate restTemplate;
@@ -29,6 +42,8 @@ public class ProductSteps {
     private String searchTerm;
     private static double minPrice;
     private static double maxPrice;
+
+    private boolean notificationReceived = false;
 
     public ProductSteps(TestRestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -373,7 +388,6 @@ public class ProductSteps {
         }
     }
 
-
     @Then("The products matching all filters are successfully retrieved")
     public void theProductsMatchingAllFiltersAreSuccessfullyRetrieved() {
         List<Map<String, Object>> products = getProductsAsMap("Product retrieval by filters failed: ",
@@ -396,6 +410,129 @@ public class ProductSteps {
                 throw new RuntimeException("Product price " + price + " is not within the specified range of " + minPrice + " to " + maxPrice);
             }
         }
+    }
 
+    @When("The user tries to retrieve audit revisions for products")
+    public void theUserRetrievesAuditRevisionsForProducts() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        response = restTemplate.exchange(
+                "/api/v1/audit/product-revisions",
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+    }
+
+    @Then("The audit revisions are successfully retrieved")
+    public void theAuditRevisionsAreSuccessfullyRetrieved() {
+        int updates = 0;
+        int deletions = 0;
+        int creations = 0;
+
+        List<Map<String, Object>> revisions = getProductsAsMap("Audit revisions retrieval failed: ",
+                "Audit revisions response does not contain revisions list");
+
+        if (revisions.isEmpty()) throw new RuntimeException("No audit revisions found in the response");
+
+        for (Map<String, Object> revision : revisions) {
+            if (updates < UPDATES_EXPECTED && revision.get("revType").equals("MOD")) {
+                updates++;
+                continue;
+            }
+
+            if (deletions < DELETIONS_EXPECTED && revision.get("revType").equals("DEL")) {
+                deletions++;
+                continue;
+            }
+
+            if (creations < CREATIONS_EXPECTED && revision.get("revType").equals("ADD")) {
+                creations++;
+                continue;
+            }
+
+            throw new RuntimeException("Unexpected revision type or too many revisions of a type");
+        }
+
+        if (updates < UPDATES_EXPECTED || deletions < DELETIONS_EXPECTED || creations < CREATIONS_EXPECTED) {
+            throw new RuntimeException("Not all expected revision types were found");
+        }
+    }
+
+    @When("The user retrieves the products report")
+    public void theUserRetrievesTheProductsReport() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        response = restTemplate.exchange(
+                "/api/v1/reports/products",
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+    }
+
+    @Then("The products report is successfully retrieved")
+    public void theProductsReportIsSuccessfullyRetrieved() {
+        if (response == null || !response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Products report retrieval failed: " + (response != null ? response.getStatusCode() : "No response"));
+        }
+
+        Map<String, Object> body = response.getBody();
+        if (body == null || !body.containsKey("totalProductsWithMinStock") || !body.containsKey("totalProductsAddedLastWeek") ||
+                !body.containsKey("totalProductsDeletedLastWeek")) {
+            throw new RuntimeException("Products report response does not contain expected fields");
+        }
+    }
+
+    @When("The user changes the quantity of a product")
+    public void theUserChangesTheQuantityOfAProduct() {
+        WebClient client = WebClient.builder()
+                .baseUrl("http://localhost:" + port)
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .build();
+
+        ParameterizedTypeReference<ServerSentEvent<String>> type = new ParameterizedTypeReference<>() {};
+
+        var notificationFlux = client.get()
+                .uri("/api/v1/notifications/stream?userId=" + UUID.randomUUID())
+                .retrieve()
+                .bodyToFlux(type);
+
+        StepVerifier sseVerifier = StepVerifier.create(notificationFlux)
+                .expectNextCount(1)
+                .thenCancel()
+                .verifyLater();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+
+        Map<String, Object> updateBody = new HashMap<>();
+        updateBody.put("quantity", 0);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(updateBody, headers);
+
+        restTemplate.exchange(
+                "/api/v1/product/" + createdProductId + "/stock",
+                HttpMethod.PATCH,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        notificationReceived = true;
+        try {
+            sseVerifier.verify(Duration.ofSeconds(10));
+        } catch (Exception e) {
+            notificationReceived = false;
+            throw new RuntimeException("Error on SSE: " + e.getMessage(), e);
+        }
+    }
+
+    @Then("The user receives a notification when the product is on low stock")
+    public void theUserReceivesANotificationWhenTheProductIsOnLowStock() {
+        if (!notificationReceived) throw new RuntimeException("No notification received for low stock");
     }
 }

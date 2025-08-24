@@ -9,7 +9,7 @@ CREATE TABLE product
     CONSTRAINT pk_product PRIMARY KEY (id)
 );
 
-INSERT INTO product (category,description,"name",price,quantity) VALUES
+INSERT INTO product (category,description,name,price,quantity) VALUES
 ('ELECTRONICS','High-end laptop with 16GB RAM and 512GB SSD','Laptop Pro',1200.0,10),
 ('FURNITURE','Wooden office desk with drawers','Office Desk',350.0,5),
 ('CLOTHING','Lightweight shoes for running','Running Shoes',75.0,20),
@@ -20,7 +20,7 @@ INSERT INTO product (category,description,"name",price,quantity) VALUES
 ('BEAUTY','Natural shampoo with aloe vera','Shampoo',8.99,50),
 ('AUTOMOTIVE','Fast USB car charger','Car Charger',14.99,35),
 ('HEALTHCARE','1000mg Vitamin C tablets','Vitamin C',12.5,60);
-INSERT INTO product (category,description,"name",price,quantity) VALUES
+INSERT INTO product (category,description,name,price,quantity) VALUES
 ('ELECTRONICS','Noise-cancelling over-ear headphones','Bluetooth Headphones',89.99,15),
 ('FURNITURE','Modern glass dining table','Dining Table',500.0,2),
 ('CLOTHING','Waterproof and insulated jacket','Winter Jacket',120.0,12),
@@ -31,7 +31,7 @@ INSERT INTO product (category,description,"name",price,quantity) VALUES
 ('BEAUTY','Anti-aging face cream with retinol','Face Cream',34.5,25),
 ('AUTOMOTIVE','All-season windshield wiper blades','Wiper Blades',19.99,30),
 ('HEALTHCARE','Ibuprofen tablets 200mg','Pain Reliever',6.99,100);
-INSERT INTO product (category,description,"name",price,quantity) VALUES
+INSERT INTO product (category,description,name,price,quantity) VALUES
 ('ELECTRONICS','Latest model with AMOLED display','Smartphone',899.0,8),
 ('FURNITURE','5-tier wooden bookshelf','Bookshelf',120.0,6),
 ('CLOTHING','Slim-fit blue jeans','Jeans',40.0,18),

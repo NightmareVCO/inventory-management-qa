@@ -32,7 +32,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	testImplementation 'io.projectreactor:reactor-test'
 
 	// DB and Migrations
 	implementation 'org.flywaydb:flyway-core'
@@ -40,7 +41,6 @@ dependencies {
 	implementation 'org.postgresql:postgresql'
 	implementation 'org.hibernate.orm:hibernate-envers'
 	implementation 'org.hibernate.orm:hibernate-core'
-
 
 	// Dev tools
 	implementation 'org.mapstruct:mapstruct:1.6.3'
@@ -62,6 +62,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'io.cucumber:cucumber-junit:7.14.0'
 	testImplementation 'io.cucumber:cucumber-spring:7.14.0'
+	runtimeOnly 'com.h2database:h2'
 }
 
 spotless {

@@ -6,8 +6,6 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.spring.CucumberContextConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -16,6 +14,7 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
@@ -24,8 +23,6 @@ import java.util.Map;
 import java.util.List;
 import java.util.UUID;
 
-@CucumberContextConfiguration
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ProductSteps {
     @LocalServerPort
     private int port;
@@ -495,41 +492,36 @@ public class ProductSteps {
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .build();
 
-        ParameterizedTypeReference<ServerSentEvent<String>> type = new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<ServerSentEvent<String>> type =
+                new ParameterizedTypeReference<>() {};
 
-        var notificationFlux = client.get()
-                .uri("/api/v1/notifications/stream?userId=" + UUID.randomUUID())
+        Flux<ServerSentEvent<String>> notificationFlux = client.get()
+                .uri("/api/v1/notifications/stream?userId=test@test.com")
                 .retrieve()
                 .bodyToFlux(type);
 
-        StepVerifier sseVerifier = StepVerifier.create(notificationFlux)
-                .expectNextCount(1)
-                .thenCancel()
-                .verifyLater();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-
-        Map<String, Object> updateBody = new HashMap<>();
-        updateBody.put("quantity", 0);
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(updateBody, headers);
-
-        restTemplate.exchange(
-                "/api/v1/product/" + createdProductId + "/stock",
-                HttpMethod.PATCH,
-                request,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        notificationReceived = true;
         try {
-            sseVerifier.verify(Duration.ofSeconds(10));
+            StepVerifier.create(notificationFlux)
+                    .then(() -> {
+                        client.patch()
+                                .uri("/api/v1/product/{id}/stock", createdProductId)
+                                .bodyValue(Map.of("quantity", 0))
+                                .retrieve()
+                                .toBodilessEntity()
+                                .block();
+                    })
+                    .expectNextMatches(event -> {
+                        notificationReceived = event.data() != null;
+                        return notificationReceived;
+                    })
+                    .thenCancel()
+                    .verify(Duration.ofSeconds(5));
         } catch (Exception e) {
             notificationReceived = false;
-            throw new RuntimeException("Error on SSE: " + e.getMessage(), e);
+            throw new RuntimeException("Error receiving SSE: " + e.getMessage(), e);
         }
     }
+
 
     @Then("The user receives a notification when the product is on low stock")
     public void theUserReceivesANotificationWhenTheProductIsOnLowStock() {

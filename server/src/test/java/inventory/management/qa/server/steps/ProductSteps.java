@@ -6,6 +6,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,6 +27,9 @@ import java.util.UUID;
 public class ProductSteps {
     @LocalServerPort
     private int port;
+
+    @Value("${keycloak.auth-server.token-url}")
+    private String keyCloakUrl;
 
     private static final int CREATIONS_EXPECTED = 1;
     private static final int UPDATES_EXPECTED = 2;
@@ -60,7 +64,6 @@ public class ProductSteps {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        String keyCloakUrl = "http://localhost:7080/realms/inventory-realm/protocol/openid-connect/token";
         this.response = restTemplate.exchange(
                 keyCloakUrl,
                 HttpMethod.POST,

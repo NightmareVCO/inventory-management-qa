@@ -4,16 +4,17 @@ import {
 	NEXT_KEYCLOAK_URL,
 } from '@lib/constants/config.constants';
 import Keycloak from 'keycloak-js';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 export default function useKeycloak() {
-	const [keycloak] = useState(
+	const keycloak = useMemo(
 		() =>
 			new Keycloak({
 				url: NEXT_KEYCLOAK_URL ?? '',
 				realm: NEXT_KEYCLOAK_REALM ?? '',
 				clientId: NEXT_KEYCLOAK_CLIENT_ID ?? '',
 			}),
+		[],
 	);
 
 	const initOptions = useMemo(() => {

@@ -1,12 +1,14 @@
-package inventory.management.qa.server;
+/* (C)2025 */
+package inventory.management.qa.server.services;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import inventory.management.qa.server.dtos.ProductNotificationDTO;
 import inventory.management.qa.server.entities.Category;
 import inventory.management.qa.server.entities.Product;
 import inventory.management.qa.server.exception.EntityNotFoundException;
 import inventory.management.qa.server.repositories.ProductRepository;
-import inventory.management.qa.server.services.ProductNotificationService;
-import inventory.management.qa.server.services.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,20 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
-class ProductServiceTest {
+class ProductServiceUnitTest {
 
-    @Mock
-    private ProductRepository productRepository;
+    @Mock private ProductRepository productRepository;
 
-    @Mock
-    private ProductNotificationService productNotificationService;
+    @Mock private ProductNotificationService productNotificationService;
 
-    @InjectMocks
-    private ProductService productService;
+    @InjectMocks private ProductService productService;
 
     private Product product;
     private Product updatedProduct;
@@ -114,8 +110,9 @@ class ProductServiceTest {
 
     @Test
     void delete_ShouldDeleteProductAndReturnDeletedEntity_WhenExists() {
-        when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product))
-                                            .thenReturn(java.util.Optional.empty());
+        when(productRepository.findById(1L))
+                .thenReturn(java.util.Optional.of(product))
+                .thenReturn(java.util.Optional.empty());
 
         Product deletedProduct = productService.delete(1L);
 
@@ -154,7 +151,8 @@ class ProductServiceTest {
         assertEquals(lowQuantity, result.getQuantity());
         verify(productRepository).findById(1L);
         verify(productRepository).save(product);
-        verify(productNotificationService).sendLowStockNotification(any(ProductNotificationDTO.class));
+        verify(productNotificationService)
+                .sendLowStockNotification(any(ProductNotificationDTO.class));
     }
 
     @Test
@@ -169,6 +167,7 @@ class ProductServiceTest {
         assertEquals(highQuantity, result.getQuantity());
         verify(productRepository).findById(1L);
         verify(productRepository).save(product);
-        verify(productNotificationService, never()).sendLowStockNotification(any(ProductNotificationDTO.class));
+        verify(productNotificationService, never())
+                .sendLowStockNotification(any(ProductNotificationDTO.class));
     }
 }

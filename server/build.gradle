@@ -62,6 +62,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'io.cucumber:cucumber-junit:7.14.0'
 	testImplementation 'io.cucumber:cucumber-spring:7.14.0'
+	testImplementation 'org.junit.vintage:junit-vintage-engine:5.7.0'
 	runtimeOnly 'com.h2database:h2'
 }
 
@@ -85,8 +86,27 @@ spotless {
 	}
 }
 
-tasks.named('test') {
+tasks.register('runUnitTests', Test) {
 	useJUnitPlatform()
+	include '**/*UnitTest*'
+	exclude '**/*IntegrationTest*'
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+tasks.register('runIntegrationTests', Test) {
+	useJUnit()
+	include '**/*IntegrationTest*'
+	exclude '**/*UnitTest*'
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+test {
+	useJUnit()
+	include '**/*IntegrationTest*'
 }
 
 compileJava {

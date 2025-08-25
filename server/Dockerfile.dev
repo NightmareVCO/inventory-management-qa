@@ -5,3 +5,7 @@ WORKDIR /app
 EXPOSE 8080
 
 CMD ["gradle", "bootRun", "--no-daemon"]
+
+# TODO: Make task to run cucumber/junit tests in gradle
+FROM dev AS test
+RUN gradle clean test cucumber --no-daemon

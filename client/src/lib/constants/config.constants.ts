@@ -8,3 +8,6 @@ export const NEXT_KEYCLOAK_REALM = process.env.NEXT_PUBLIC_KEYCLOAK_REALM;
 
 export const NEXT_KEYCLOAK_CLIENT_ID =
 	process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID;
+
+export const NEXT_PUBLIC_KEYCLOAK_REALM_BACKEND =
+	process.env.NEXT_PUBLIC_KEYCLOAK_REALM_BACKEND ?? 'inventory-backend';

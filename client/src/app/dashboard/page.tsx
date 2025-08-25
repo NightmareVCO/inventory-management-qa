@@ -5,17 +5,17 @@ import Card from '@components/card/Card';
 import LoadingScreen from '@components/loading/LoadingScreen';
 import SidebarWithHeader from '@components/navigation/sidebar/SidebarWithBanner';
 import { Suspense } from 'react';
-import ProductTable from '@/components/table/ProductTable';
-import useDashboardPage from '@/lib/hooks/useDashboardPage';
 import {
 	Bar,
 	BarChart,
 	CartesianGrid,
+	ResponsiveContainer,
 	Tooltip,
 	XAxis,
 	YAxis,
-	ResponsiveContainer,
 } from 'recharts';
+import ProductTable from '@/components/table/ProductTable';
+import useDashboardPage from '@/lib/hooks/useDashboardPage';
 
 export default function DashboardPage() {
 	return (

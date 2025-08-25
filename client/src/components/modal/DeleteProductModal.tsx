@@ -79,6 +79,7 @@ export default function DeleteProductModal({
 	return (
 		<AlertDialog
 			isOpen={isOpen}
+			//@ts-ignore
 			leastDestructiveRef={cancelRef}
 			onClose={onClose}
 			isCentered

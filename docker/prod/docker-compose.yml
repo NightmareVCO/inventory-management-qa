@@ -1,4 +1,4 @@
-# to run: docker compose -f docker/dev/docker-compose.yml up -d --build
+# to run: docker compose -f docker/prod/docker-compose.yml up -d --build
 services:
   traefik:
     image: "traefik:v3.4"

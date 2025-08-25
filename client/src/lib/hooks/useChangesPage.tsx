@@ -55,8 +55,6 @@ export default function useChangesPage() {
 		mutate();
 	};
 
-	console.log('Changes:', changes);
-
 	return {
 		changes,
 		error,

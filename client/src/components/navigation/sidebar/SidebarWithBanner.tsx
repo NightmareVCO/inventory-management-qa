@@ -161,6 +161,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 					<MenuButton
 						py={2}
 						transition="all 0.3s"
+						aria-label="notifications"
 						_focus={{ boxShadow: 'none' }}
 					>
 						{notifications.length > 0 ? (

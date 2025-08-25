@@ -5,7 +5,7 @@ import {
 	getAllNotifications,
 	saveNotification,
 } from '@lib/db/notificationsDB';
-import useKeycloak from '@lib/hooks/useKeycloak';
+import useAuth from '@lib/hooks/useAuth';
 import type { Notification } from '@lib/model/notification.model';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -15,7 +15,7 @@ export default function useNotificationProduct() {
 	const [latestNotification, setLatestNotification] =
 		useState<Notification | null>(null);
 
-	const { keycloak } = useKeycloak();
+	const { currentUser } = useAuth({});
 	const toast = useToast();
 
 	useEffect(() => {
@@ -27,7 +27,7 @@ export default function useNotificationProduct() {
 		fetchStoredNotifications();
 
 		const es = new EventSource(
-			`${API_URL}/notifications/stream?userId=${keycloak?.subject}`,
+			`${API_URL}/notifications/stream?userId=${currentUser.email}`,
 			{ withCredentials: true },
 		);
 
@@ -53,7 +53,7 @@ export default function useNotificationProduct() {
 			es.removeEventListener('low-stock', handler as any);
 			es.close();
 		};
-	}, [keycloak]);
+	}, [currentUser.email]);
 
 	useEffect(() => {
 		if (!latestNotification) return;

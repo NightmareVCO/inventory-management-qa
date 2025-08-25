@@ -6,6 +6,7 @@ export const Routes = {
 	Login: NEXT_KEYCLOAK_AUTH_URL,
 	Inventory: '/inventory',
 	Changes: '/changes',
+	Stock: '/stock',
 } as const;
 
 export type RoutesType = (typeof Routes)[keyof typeof Routes];

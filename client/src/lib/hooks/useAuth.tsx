@@ -1,3 +1,4 @@
+import { NEXT_PUBLIC_KEYCLOAK_REALM_BACKEND } from '@lib/constants/config.constants';
 import { Roles } from '@lib/constants/roles.constants';
 import { Routes } from '@lib/constants/routes.constants';
 import { useKeycloak } from '@react-keycloak/web';
@@ -8,10 +9,10 @@ export type UseAuthProps = {
 	redirectAfterLogin?: string;
 };
 
-const REALM_BACKEND =
-	process.env.NEXT_KEYCLOAK_REALM_BACKEND || 'inventory-backend';
-
+const REALM_BACKEND = NEXT_PUBLIC_KEYCLOAK_REALM_BACKEND;
 const PUBLIC_ROUTES = [Routes.Home, Routes.Inventory];
+const EMPLOYEE_ROUTES = [Routes.Stock];
+const ADMIN_ROUTES = [Routes.Changes, Routes.Dashboard];
 
 export default function useAuth({ redirectAfterLogin }: UseAuthProps) {
 	const router = useRouter();
@@ -23,6 +24,7 @@ export default function useAuth({ redirectAfterLogin }: UseAuthProps) {
 			name: keycloak?.tokenParsed?.given_name ?? 'No Name',
 			lastName: keycloak?.tokenParsed?.family_name ?? 'No Last Name',
 			role: keycloak?.resourceAccess?.[REALM_BACKEND]?.roles || [],
+			email: keycloak?.tokenParsed?.email ?? 'No Email',
 		};
 	}, [keycloak.tokenParsed, keycloak.resourceAccess]);
 
@@ -69,32 +71,65 @@ export default function useAuth({ redirectAfterLogin }: UseAuthProps) {
 			return;
 		}
 
+		const verifyPublicRoute = (currentLocation: string) => {
+			return PUBLIC_ROUTES.includes(
+				currentLocation as (typeof PUBLIC_ROUTES)[number],
+			);
+		};
+
+		const verifyEmployeeRoute = (currentLocation: string) => {
+			return EMPLOYEE_ROUTES.includes(
+				currentLocation as (typeof EMPLOYEE_ROUTES)[number],
+			);
+		};
+
+		const verifyAdminRoute = (currentLocation: string) => {
+			return ADMIN_ROUTES.includes(
+				currentLocation as (typeof ADMIN_ROUTES)[number],
+			);
+		};
+
+		const verifyAuthenticatedUser = (
+			currentLocation: string,
+			origin: string,
+		) => {
+			if (isAuthenticated) return;
+
+			sessionStorage.setItem('redirectAfterLogin', currentLocation);
+
+			keycloak.login({
+				redirectUri: origin + redirectAfterLogin,
+			});
+			return;
+		};
+
 		const checkAuthAndPermissions = async () => {
 			try {
 				const currentLocation = window.location.pathname;
 				const origin = window.location.origin;
 
-				if (
-					PUBLIC_ROUTES.includes(
-						currentLocation as (typeof PUBLIC_ROUTES)[number],
-					)
-				) {
+				if (verifyPublicRoute(currentLocation)) {
 					setIsAuthChecking(false);
 					return;
 				}
 
-				if (!isAuthenticated) {
-					sessionStorage.setItem('redirectAfterLogin', currentLocation);
+				verifyAuthenticatedUser(currentLocation, origin);
 
-					keycloak.login({
-						redirectUri: origin + redirectAfterLogin,
-					});
+				if (verifyEmployeeRoute(currentLocation)) {
+					if (hasBasePermission) {
+						setIsAuthChecking(false);
+						return;
+					}
+
+					router.push(Routes.Inventory);
 					return;
 				}
 
-				if (!hasBasePermission) {
-					router.push(Routes.Home);
-					return;
+				if (verifyAdminRoute(currentLocation)) {
+					if (!hasAdminPermission) {
+						router.push(Routes.Inventory);
+						return;
+					}
 				}
 
 				setIsAuthChecking(false);
@@ -111,6 +146,7 @@ export default function useAuth({ redirectAfterLogin }: UseAuthProps) {
 		router,
 		redirectAfterLogin,
 		hasBasePermission,
+		hasAdminPermission,
 		isAuthenticated,
 	]);
 

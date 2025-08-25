@@ -31,8 +31,8 @@
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
-		"tests/playwright.config.ts.",
-		"tests/auth.setup.ts."
+		"tests/auth.setup.ts.",
+		"next.config.js"
 	],
 	"exclude": ["node_modules"]
 }

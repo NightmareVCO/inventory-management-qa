@@ -1,5 +1,5 @@
 /* (C)2025 */
-package inventory.management.qa.server.services;
+package inventory.management.qa.server;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -9,6 +9,8 @@ import inventory.management.qa.server.entities.Category;
 import inventory.management.qa.server.entities.Product;
 import inventory.management.qa.server.exception.EntityNotFoundException;
 import inventory.management.qa.server.repositories.ProductRepository;
+import inventory.management.qa.server.services.ProductNotificationService;
+import inventory.management.qa.server.services.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

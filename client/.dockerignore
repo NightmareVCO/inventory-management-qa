@@ -19,3 +19,7 @@ Thumbs.db
 README.md
 LICENSE
 *.md
+
+# Uncomment only for testing prod dockerfile when testing locally
+# .env.production
+# .env.local

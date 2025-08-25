@@ -34,6 +34,7 @@ services:
     build:
       context: ../../server
       dockerfile: Dockerfile.dev
+      target: dev
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -51,6 +52,7 @@ services:
       JWT_AUTH_CONVERTER_PRINCIPAL_ATTRIBUTE: preferred_username
       JWT_AUTH_CONVERTER_JWT_ISSUER_URI: http://keycloak-auth:7080/realms/inventory-realm
       JWT_AUTH_CONVERTER_JWT_JWK_SET_URI: http://keycloak-auth:7080/realms/inventory-realm/protocol/openid-connect/certs
+      KEYCLOAK_AUTH_SERVER_TOKEN_URL: http://keycloak-auth:7080/realms/inventory-realm/protocol/openid-connect/token
       SPRING_HIBERNATE_ENVERS_ENABLED: true
       SPRING_HIBERNATE_ENVERS_AUDIT_TABLE_SUFFIX: _logs
       SPRING_HIBERNATE_ENVERS_STORE_DATA_AT_DELETE: true

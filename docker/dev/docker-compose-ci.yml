@@ -1,0 +1,83 @@
+services:
+  inventory-backend:
+    container_name: dev-inventory-backend
+    build:
+      context: ../../server
+      dockerfile: Dockerfile.dev
+      target: test
+    volumes:
+      - ../../backend-tests-reports:/app/build/reports
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_APPLICATION_NAME: inventory-backend
+      SPRING_DATASOURCE_URL: jdbc:postgresql://inventory-db:5432/inventory-db
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_AUTH_CONVERTER_RESOURCE_ID: inventory-backend
+      JWT_AUTH_CONVERTER_PRINCIPAL_ATTRIBUTE: preferred_username
+      JWT_AUTH_CONVERTER_JWT_ISSUER_URI: http://keycloak-auth:7080/realms/inventory-realm
+      JWT_AUTH_CONVERTER_JWT_JWK_SET_URI: http://keycloak-auth:7080/realms/inventory-realm/protocol/openid-connect/certs
+      KEYCLOAK_AUTH_SERVER_TOKEN_URL: http://keycloak-auth:7080/realms/inventory-realm/protocol/openid-connect/token
+
+      SPRING_HIBERNATE_ENVERS_ENABLED: true
+      SPRING_HIBERNATE_ENVERS_AUDIT_TABLE_SUFFIX: _logs
+      SPRING_HIBERNATE_ENVERS_STORE_DATA_AT_DELETE: true
+      SPRING_MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+      SPRING_MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: when-authorized
+      SPRING_MANAGEMENT_METRICS_TAGS_APPLICATION: fuji-inventory
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health" ]
+      interval: 15s
+      timeout: 3s
+      retries: 15
+    depends_on:
+      keycloak-auth:
+        condition: service_healthy
+      inventory-db:
+        condition: service_healthy
+
+  inventory-db:
+    container_name: dev-inventory-db
+    image: postgres:17.5-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: inventory-db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U postgres -d inventory-db'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  keycloak-auth:
+    container_name: dev-keycloak-auth
+    build:
+      context: ../../keycloak
+      dockerfile: Dockerfile.dev
+    environment:
+      KC_HOSTNAME: keycloak-auth
+      KC_HOSTNAME_PORT: 7080
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    volumes:
+      - keycloak_dev-data:/opt/keycloak/data
+    ports:
+      - "7080:7080"
+      - "9000:9000"
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000;echo -e 'GET /health/ready HTTP/1.1\\r\\nhost: http://localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    command: [ "start-dev", "--http-port", "7080", "--import-realm" ]
+
+volumes:
+  keycloak_dev-data: 

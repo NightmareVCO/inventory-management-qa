@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('admin') or hasRole('employee')")
+@PreAuthorize("hasRole('admin')")
 @RequestMapping("/api/v1/audit")
 public class AuditController {
 

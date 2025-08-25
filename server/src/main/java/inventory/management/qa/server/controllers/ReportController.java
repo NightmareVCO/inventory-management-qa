@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('admin') or hasRole('employee')")
+@PreAuthorize("hasRole('admin')")
 @RequestMapping("/api/v1/reports")
 public class ReportController {
 

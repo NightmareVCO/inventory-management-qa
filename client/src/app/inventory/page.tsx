@@ -69,7 +69,6 @@ function InventoryContent() {
 					mb={{ base: 4, md: 0 }}
 				>
 					<Card name="Total Products" quantity={products.totalElements} />
-					{/* <Card name="Out Of Stock" quantity={0} /> */}
 				</Flex>
 				<Flex justifyContent="center" alignItems="center">
 					<Button

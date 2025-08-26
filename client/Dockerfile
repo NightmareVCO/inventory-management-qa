@@ -8,11 +8,19 @@ WORKDIR /app
 COPY package.json  pnpm-lock.yaml*  ./
 RUN corepack enable pnpm && pnpm i;
 
-
 FROM base AS builder
+
 WORKDIR /app
+
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY src/ ./src
+COPY public/ ./public
+COPY next.config.js ./
+COPY tsconfig.json ./
+COPY package.json  package.json
+COPY pnpm-lock.yaml pnpm-lock.yaml
+
+COPY .env.production .env
 
 RUN corepack enable pnpm
 RUN pnpm build

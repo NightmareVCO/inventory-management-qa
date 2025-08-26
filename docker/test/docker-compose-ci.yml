@@ -7,7 +7,7 @@ services:
     init: true
     ipc: host
     env_file:
-      - ./test-e2e/.env.test
+      - ../../test-e2e/.env.test
     volumes:
       - ../../e2e-tests-reports:/app/build/test-results
 
@@ -35,7 +35,7 @@ services:
       context: ../../server
       dockerfile: Dockerfile.test
     env_file:
-      - ./server/.env.test
+      - ../../server/.env.test
     volumes:
       - ../../backend-tests-reports:/app/build/reports
     healthcheck:

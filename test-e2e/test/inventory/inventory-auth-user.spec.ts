@@ -1,22 +1,12 @@
-import path from 'node:path';
 import { expect, test } from '@playwright/test';
-import dotenv from 'dotenv';
-
-dotenv.config({
-	path: path.resolve(__dirname, '../../.env.local'),
-	debug: false,
-	quiet: true
-});
-
-
-const URL = process.env.PUBLIC_FRONTEND_URL;
-
-if (!URL) {
-	throw new Error('Missing environment variables');
-}
+import { URL } from '../../constants';
 
 test.describe('Inventory Page for Normal User', () => {
 	test.beforeEach(async ({ page }) => {
+		if (!URL) {
+			throw new Error('Missing environment variables');
+		}
+
 		await page.goto(`${URL}/inventory`, {
 			waitUntil: 'load',
 		});

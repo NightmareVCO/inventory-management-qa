@@ -1,7 +1,6 @@
 name: CI - Full Application Testing (Unit tests, Integration tests, E2E tests)
 
 on:
-  push: { branches: [ test ] }
   pull_request: { branches: [ test ] }
 
 jobs:

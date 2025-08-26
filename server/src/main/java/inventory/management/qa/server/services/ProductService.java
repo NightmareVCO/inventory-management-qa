@@ -54,6 +54,7 @@ public class ProductService {
     public Product updateStock(Long id, int quantity) {
         Product existingProduct = findById(id);
 
+        existingProduct.setOlderQuantity(existingProduct.getOlderQuantity());
         existingProduct.setQuantity(quantity);
 
         if (isLowStock(existingProduct)) {

@@ -23,6 +23,7 @@ COPY pnpm-lock.yaml pnpm-lock.yaml
 COPY .env.production .env
 
 RUN corepack enable pnpm
+
 RUN pnpm build
 
 FROM base AS runner

@@ -505,7 +505,14 @@
     "createdTimestamp" : 1756144739022,
     "enabled" : true,
     "totp" : false,
-    "credentials" : [ ],
+    "credentials" : [ {
+      "id" : "46b94025-46af-49d8-88f2-94270c656281",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1756210947941,
+      "secretData" : "{\"value\":\"6/X3CF+efyuxKuJQ2llijVQZojVZgUHRgC0sOesj1rU=\",\"salt\":\"K+gkpS1AZ5zN0RRFILNuiw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-inventory-realm" ],

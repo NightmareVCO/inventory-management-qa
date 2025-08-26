@@ -1,5 +1,6 @@
 .vscode
 .DS_Store
-../../backend-tests-reports
+**/backend-tests-reports
+**/jmeter-reports
 ./server/target
 .idea

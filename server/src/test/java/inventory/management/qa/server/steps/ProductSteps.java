@@ -19,10 +19,8 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.UUID;
 
 public class ProductSteps {
     @LocalServerPort
@@ -30,6 +28,9 @@ public class ProductSteps {
 
     @Value("${keycloak.auth-server.token-url}")
     private String keyCloakUrl;
+
+    @Value("${api.base.url}")
+    private String apiBaseUrl;
 
     private static final int CREATIONS_EXPECTED = 1;
     private static final int UPDATES_EXPECTED = 2;
@@ -89,9 +90,10 @@ public class ProductSteps {
         headers.setBearerAuth(token);
 
         HttpEntity<ProductRequestDTO> request = new HttpEntity<>(productRequest, headers);
+        String url = getFormattedBaseUrl() + "/api/v1/product/";
 
         this.response = restTemplate.exchange(
-                "/api/v1/product/",
+                url,
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -123,8 +125,10 @@ public class ProductSteps {
     public void theUserRequestsTheProductByItsId() {
         HttpEntity<Void> request = new HttpEntity<>(createHeaders());
 
+        String url = getFormattedBaseUrl() + "/api/v1/product/1";
+
         this.response = restTemplate.exchange(
-                "/api/v1/product/1",
+                url,
                 HttpMethod.GET,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -182,8 +186,10 @@ public class ProductSteps {
     private ResponseEntity<Map<String, Object>> deleteProduct(long productId) {
         HttpEntity<Void> request = new HttpEntity<>(createHeaders());
 
+        String url = getFormattedBaseUrl() + "/api/v1/product/" + productId;
+
         return restTemplate.exchange(
-                "/api/v1/product/" + productId,
+                url,
                 HttpMethod.DELETE,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -194,8 +200,10 @@ public class ProductSteps {
     public void theUserRequestsAllProducts() {
         HttpEntity<Void> request = new HttpEntity<>(createHeaders());
 
+        String url = getFormattedBaseUrl() + "/api/v1/product/";
+
         this.response = restTemplate.exchange(
-                "/api/v1/product/",
+                url,
                 HttpMethod.GET,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -216,8 +224,10 @@ public class ProductSteps {
         headers.setBearerAuth(token);
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
+        String url = getFormattedBaseUrl() + "/api/v1/product/?category=" + category;
+
         response = restTemplate.exchange(
-                "/api/v1/product/?category=" + category,
+                url,
                 HttpMethod.GET,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -258,8 +268,10 @@ public class ProductSteps {
         headers.setBearerAuth(token);
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
+        String url = getFormattedBaseUrl() + "/api/v1/product/?minPrice=" + minPrice + "&maxPrice=" + maxPrice;
+
         response = restTemplate.exchange(
-                "/api/v1/product/?minPrice=" + minPrice + "&maxPrice=" + maxPrice,
+                url,
                 HttpMethod.GET,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -301,8 +313,9 @@ public class ProductSteps {
 
         HttpEntity<ProductRequestDTO> request = new HttpEntity<>(productRequest, headers);
 
+        String url = getFormattedBaseUrl() + "/api/v1/product/" + productId;
         return restTemplate.exchange(
-                "/api/v1/product/" + productId,
+                url,
                 HttpMethod.PATCH,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -318,7 +331,7 @@ public class ProductSteps {
     @When("The user retrieves products with the following filters")
     public void theUserRetrievesProductsWithTheFollowingFilters(DataTable dataTable) {
         List<Map<String, String>> filters = dataTable.asMaps();
-        StringBuilder url = new StringBuilder("/api/v1/product/?");
+        StringBuilder url = new StringBuilder(getFormattedBaseUrl() + "/api/v1/product/?");
 
         for (Map<String, String> filter : filters) {
             if (filter.containsKey("name")) {
@@ -357,8 +370,10 @@ public class ProductSteps {
 
         this.searchTerm = searchTerm;
 
+        String url = getFormattedBaseUrl() + "/api/v1/product/?search=" + searchTerm;
+
         this.response = restTemplate.exchange(
-                "/api/v1/product/?search=" + searchTerm,
+                url,
                 HttpMethod.GET,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -418,8 +433,10 @@ public class ProductSteps {
         headers.setBearerAuth(token);
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
+        String url = getFormattedBaseUrl() + "/api/v1/audit/product-revisions";
+
         response = restTemplate.exchange(
-                "/api/v1/audit/product-revisions",
+                url,
                 HttpMethod.GET,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -467,8 +484,10 @@ public class ProductSteps {
         headers.setBearerAuth(token);
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
+        String url = getFormattedBaseUrl() + "/api/v1/reports/products";
+
         response = restTemplate.exchange(
-                "/api/v1/reports/products",
+                url,
                 HttpMethod.GET,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -491,7 +510,7 @@ public class ProductSteps {
     @When("The user changes the quantity of a product")
     public void theUserChangesTheQuantityOfAProduct() {
         WebClient client = WebClient.builder()
-                .baseUrl("http://localhost:" + port)
+                .baseUrl(getFormattedBaseUrl())
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .build();
 
@@ -525,9 +544,16 @@ public class ProductSteps {
         }
     }
 
-
     @Then("The user receives a notification when the product is on low stock")
     public void theUserReceivesANotificationWhenTheProductIsOnLowStock() {
         if (!notificationReceived) throw new RuntimeException("No notification received for low stock");
+    }
+
+    private String getFormattedBaseUrl() {
+        if (!apiBaseUrl.contains("localhost")) {
+            return apiBaseUrl;
+        }
+
+        return "http://localhost:" + port;
     }
 }

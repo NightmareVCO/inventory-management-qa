@@ -3,3 +3,4 @@ Educational inventory system highlighting key principles and practices of Softwa
 
 
 # Technologies Used
+- Frontend: Next.js, React, TypeScript, Chakra UI

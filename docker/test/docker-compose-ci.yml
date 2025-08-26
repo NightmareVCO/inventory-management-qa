@@ -47,8 +47,10 @@ services:
       - inventory-db
 
   inventory-db:
-    container_name: dev-inventory-db
+    container_name: test-inventory-db
     image: postgres:17.5-alpine
+    env_file:
+      - ../../db/.env.test
     healthcheck:
       test: [ "CMD-SHELL", "sh -c 'pg_isready -U postgres -d inventory-db'" ]
       interval: 10s

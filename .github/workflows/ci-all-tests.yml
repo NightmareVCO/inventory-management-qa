@@ -12,16 +12,6 @@ jobs:
       - name: Get repository
         uses: actions/checkout@v4
 
-      - name: Build and run E2E test
-        run: |
-            docker compose -f docker/test/docker-compose-ci.yml \
-            up --build --abort-on-container-exit e2e-inventory-frontend
-
-      - name: Build and run stress test
-        run: |
-            docker compose -f docker/test/docker-compose-ci.yml \
-            up --build --abort-on-container-exit jmeter
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

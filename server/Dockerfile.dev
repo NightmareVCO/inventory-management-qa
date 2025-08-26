@@ -7,13 +7,3 @@ COPY . .
 EXPOSE 8080
 
 CMD ["gradle", "bootRun", "--no-daemon"]
-
-FROM dev AS test
-
-WORKDIR /app
-
-COPY . .
-
-RUN gradle build -x spotlessCheck -x test
-
-ENTRYPOINT [ "gradle", "runUnitTests", "runIntegrationTests" ]

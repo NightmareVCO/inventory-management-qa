@@ -1,0 +1,45 @@
+services:
+  e2e-inventory-frontend:
+    container_name: e2e-inventory-frontend
+    build:
+      context: ../../test-e2e
+      dockerfile: Dockerfile.test
+    init: true
+    ipc: host
+    env_file:
+      - ./test-e2e/.env.test
+    volumes:
+      - ../../e2e-tests-reports:/app/build/test-results
+
+  jmeter:
+    container_name: test-jmeter-runner
+    image: justb4/jmeter:5.4
+    volumes:
+      - ../../jmeter/tests:/tests
+      - ../../jmeter-reports:/reports
+    command: >
+      -n
+      -t /tests/all-requests-test-plan.jmx
+      -l /reports/results.jtl
+      -e
+      -o /reports/html-report
+      -Jhost='test.backend.fuji.joseantstudio.tech'
+      -Jauth_host='test.admin.fuji.joseantstudio.tech'
+      -Jprotocol=https
+      -Jauth_port=443
+      -Jport=443
+
+  inventory-backend:
+    container_name: test-fuji-inventory-backend
+    build:
+      context: ../../server
+      dockerfile: Dockerfile.test
+    env_file:
+      - ./server/.env.test
+    volumes:
+      - ../../backend-tests-reports:/app/build/reports
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "--tries=1", "--timeout=5", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 5

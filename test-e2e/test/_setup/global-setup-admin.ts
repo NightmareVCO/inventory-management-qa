@@ -1,31 +1,26 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test as setup } from '@playwright/test';
-import dotenv from 'dotenv';
-
-dotenv.config({
-	path: path.resolve(__dirname, '../../.env.local'),
-	debug: false,
-	quiet: true
-});
-
+import {
+	LOGIN_PAGE,
+	PASSWORD_ADMIN,
+	URL,
+	USERNAME_ADMIN,
+} from '../../constants';
 
 const PERM_FILE = path.join(__dirname, '../../playwright/.auth/admin.json');
 
-const LOGIN_PAGE = process.env.NEXT_KEYCLOAK_LOGIN_ID;
-const USERNAME = process.env.PUBLIC_KEYCLOAK_ADMIN_USERNAME;
-const PASSWORD = process.env.PUBLIC_KEYCLOAK_ADMIN_PASSWORD;
-const URL = process.env.PUBLIC_FRONTEND_URL;
-
-if (!LOGIN_PAGE || !USERNAME || !PASSWORD || !URL) {
-	throw new Error('Missing environment variables for Keycloak authentication');
-}
-
 setup('authenticate as user with admin permission', async ({ page }) => {
+	if (!LOGIN_PAGE || !USERNAME_ADMIN || !PASSWORD_ADMIN || !URL) {
+		throw new Error(
+			'Missing environment variables for Keycloak authentication',
+		);
+	}
+
 	await page.goto(LOGIN_PAGE);
 
-	await page.fill('input#username', USERNAME);
-	await page.fill('input#password', PASSWORD);
+	await page.fill('input#username', USERNAME_ADMIN);
+	await page.fill('input#password', PASSWORD_ADMIN);
 
 	await page.click('button[type="submit"]');
 

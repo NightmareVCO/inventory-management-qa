@@ -92,7 +92,7 @@ services:
     env_file:
       - ./db/.env.production
     healthcheck:
-      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d inventory-db'" ]
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'" ]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -175,7 +175,7 @@ services:
     env_file:
       - ./keycloak/.env.production
     volumes:
-      - keycloak_dev_data:/opt/keycloak/data
+      - keycloak_data:/opt/keycloak/data
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000;echo -e 'GET /health/ready HTTP/1.1\\r\\nhost: admin.fuji.joseantstudio.tech\\r\\nConnection: close\\r\\n\\r\\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
       interval: 15s
@@ -201,6 +201,6 @@ networks:
     external: true
 
 volumes:
-  keycloak_dev_data:
+  keycloak_data:
   inventory-db_data:
 

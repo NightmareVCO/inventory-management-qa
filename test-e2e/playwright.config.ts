@@ -3,13 +3,13 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
 	testDir: './test',
-	timeout: 60_000,
+	timeout: 15_000,
 
 	use: {
 		headless: true,
 		viewport: { width: 1920, height: 1080 },
-		actionTimeout: 30_000,
-		navigationTimeout: 60_000,
+		actionTimeout: 5000,
+		navigationTimeout: 10_000,
 	},
 
 	projects: [
@@ -52,7 +52,7 @@ export default defineConfig({
 	],
 
 	reporter: [['list'], ['html', { open: 'never' }]],
-	retries: 3,
+	retries: 0,
 });
 
 // projects: [

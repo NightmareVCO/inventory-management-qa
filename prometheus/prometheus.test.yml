@@ -3,10 +3,10 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'fuji-inventory'
+  - job_name: 'test-fuji-inventory'
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['inventory-backend:8080']
-  - job_name: 'inventory-db'
+  - job_name: 'test-inventory-db'
     static_configs:
       - targets: ['postgres-exporter:9187']

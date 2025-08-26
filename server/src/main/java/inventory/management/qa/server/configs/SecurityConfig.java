@@ -59,7 +59,8 @@ public class SecurityConfig {
                 Arrays.asList(
                         "http://localhost:3000",
                         "http://inventory-frontend:3000",
-                        "https://fuji.joseantstudio.tech"));
+                        "https://fuji.joseantstudio.tech",
+                        "https://test.fuji.joseantstudio.tech"));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

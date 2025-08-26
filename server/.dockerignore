@@ -19,3 +19,6 @@ Thumbs.db
 README.md
 LICENSE
 *.md
+.env
+.env.local
+.env.*

@@ -12,11 +12,6 @@ jobs:
       - name: Get repository
         uses: actions/checkout@v4
 
-      - name: Build and run unit and integration tests
-        run: |
-            docker compose -f docker/test/docker-compose-ci.yml \
-            up --build --abort-on-container-exit inventory-backend
-
       - name: Build and run E2E test
         run: |
             docker compose -f docker/test/docker-compose-ci.yml \

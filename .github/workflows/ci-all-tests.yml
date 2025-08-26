@@ -1,0 +1,79 @@
+name: CI - Full Application Testing (Unit tests, Integration tests, E2E tests) 
+
+on:
+  pull_request: { branches: [ test ] }
+
+jobs:
+  test:
+    environment: Testing
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Get repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: client/Dockerfile.test
+          push: true
+          tags: |
+            nightmarevco/test-inventory-frontend:latest
+      
+      - name: Build and push Docker frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: server/Dockerfile.test
+          push: true
+          tags: |
+            nightmarevco/test-inventory-frontend:latest
+
+      - name: SSH into test server and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            pwd
+            cd /usr/local/app/
+            docker compose pull
+            docker compose up -d
+            sleep 60
+
+      - name: Build and run unit and integration tests
+        run: |
+            docker compose -f docker/test/docker-compose-ci.yml \
+            up --build --abort-on-container-exit inventory-backend
+      
+      - name: Build and run E2E test
+        run: |
+            docker compose -f docker/test/docker-compose-ci.yml \
+            up --build --abort-on-container-exit e2e-inventory-frontend
+
+      - name: Build and run stress test
+        run: |
+            docker compose -f docker/test/docker-compose-ci.yml \
+            up --build --abort-on-container-exit jmeter
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'test-reports'
+          path: |
+            backend-tests-reports/
+            e2e-tests-reports/
+            jmeter-reports/

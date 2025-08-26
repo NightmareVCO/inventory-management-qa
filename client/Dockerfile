@@ -6,8 +6,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json  pnpm-lock.yaml*  ./
-RUN corepack prepare pnpm@latest --activate \
- && pnpm install --frozen-lockfile
+RUN corepack enable pnpm && pnpm i;
 
 FROM base AS builder
 
@@ -23,7 +22,8 @@ COPY pnpm-lock.yaml pnpm-lock.yaml
 
 COPY .env.production .env
 
-RUN corepack prepare pnpm@latest --activate
+RUN corepack enable pnpm
+
 RUN pnpm build
 
 FROM base AS runner

@@ -1,4 +1,4 @@
-name: CI - Full Application Testing (Unit tests, Integration tests, E2E tests) 
+name: CI - Full Application Testing (Unit tests, Integration tests, E2E tests)
 
 on:
   pull_request: { branches: [ test ] }
@@ -18,26 +18,26 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Build and push Docker frontend image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: client
           file: client/Dockerfile.test
           push: true
           tags: |
             nightmarevco/test-inventory-frontend:latest
-      
-      - name: Build and push Docker frontend image
+
+      - name: Build and push Docker backend image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: server/Dockerfile.test
+          context: server
+          file: server/Dockerfile
           push: true
           tags: |
-            nightmarevco/test-inventory-frontend:latest
+            nightmarevco/test-inventory-backend:latest
 
       - name: SSH into test server and deploy
         uses: appleboy/ssh-action@v1.0.3
@@ -49,15 +49,16 @@ jobs:
           script: |
             pwd
             cd /usr/local/app/
+            docker compose down -v
             docker compose pull
             docker compose up -d
-            sleep 60
+            sleep 30
 
       - name: Build and run unit and integration tests
         run: |
             docker compose -f docker/test/docker-compose-ci.yml \
             up --build --abort-on-container-exit inventory-backend
-      
+
       - name: Build and run E2E test
         run: |
             docker compose -f docker/test/docker-compose-ci.yml \
@@ -77,3 +78,20 @@ jobs:
             backend-tests-reports/
             e2e-tests-reports/
             jmeter-reports/
+
+
+
+      # - uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '20'
+
+      # - uses: pnpm/action-setup@v2
+      #   with:
+      #     package_json_file: 'test-e2e/package.json'
+
+      # - name: Install Playwright for E2E tests and run tests
+      #   working-directory: test-e2e
+      #   run: |
+      #     pnpm install
+      #     pnpm exec playwright install
+      #     pnpm run test:ci
